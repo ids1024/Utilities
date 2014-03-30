@@ -1,0 +1,10 @@
+#!/bin/bash
+
+cd xhtml
+txt2xhtml ../txt/*
+cd ..
+rebuild-epub "$1"
+kindlegen "$1"
+mount /media/sdb1 || exit 1
+cp "${1%epub}mobi" /media/sdb1/documents
+umount /media/sdb1

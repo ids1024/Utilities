@@ -1,0 +1,59 @@
+#!/usr/bin/env python
+
+from html.parser import HTMLParser
+from subprocess import check_output
+import urllib.request
+import sys
+
+
+feedtype = {
+        'application/atom+xml':'atom',
+        'application/rss+xml':'rss'
+        }
+newsbeuterurls = "/home/ian/.config/newsbeuter/urls"
+
+
+class HTMLFeedParser(HTMLParser):
+    url, title, type = None, None, None
+
+    def handle_starttag(self, tag, attrs):
+        if tag != "link":
+            return
+        a = dict(attrs)
+        if 'type' not in a or a['type'] not in feedtype:
+            return
+        if not self.url or (self.type == 'rss' and a['type'] == 'atom'):
+            self.url = a['href']
+            self.title = a['title']
+            self.type = feedtype[a['type']]
+
+
+if len(sys.argv) >= 2:
+    url = sys.argv[1]
+else:
+    url = check_output(("xclip","-o")).decode()
+
+html = urllib.request.urlopen(url).read().decode()
+
+feed = HTMLFeedParser()
+feed.feed(html)
+
+if feed.url == None:
+    print("No feed found.")
+    sys.exit()
+
+print("Found {feed.type} feed:\n{feed.title}\n{feed.url}\n".format(feed=feed))
+
+with open(newsbeuterurls, "r") as feedconf:
+    for line in feedconf:
+        if feed.url in line:
+            sys.exit("Already in Newsbeuter.")
+
+addfeed = input("Add to Newsbeuter? [y/N] ")
+if addfeed in ('y','yes'):
+    with open(newsbeuterurls, "a") as feedconf:
+        feedconf.write(feed.url+'\n')
+    print("Change made successfully.")
+
+else:
+    print("No change made.")

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+libreoffice --headless --convert-to txt:text *.doc --outdir txt
+mkdir xhtml
+cd xhtml
+txt2xhtml ../txt/*
