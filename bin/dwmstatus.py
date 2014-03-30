@@ -44,9 +44,6 @@ def volume():
     else:
         return "{0}% Volume".format(vol)
 
-def weather():
-    return w['condition']['temp']+'° '+w['units']['temperature']
-
 def cpu():
     percent = (round(psutil.cpu_percent()))
     if percent < 20:
