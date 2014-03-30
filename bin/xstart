@@ -36,6 +36,6 @@ display = 0
 while os.path.exists("/tmp/.X{0}-lock".format(display)):
     display += 1
 
-client="/home/ian/Devel/bin/ianxenvstart.py"
+client="/home/ian/Devel/Utilities/bin/ianxenvstart.py"
 
 Popen(("xinit", client, str(envnum),"--", "/bin/X", ':'+str(display)))
