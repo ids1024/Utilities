@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
+#Statusbar script for dwm and dvtm
+
 import os
+import sys
 import subprocess
 import time
 import alsaaudio
@@ -11,8 +14,13 @@ import abook
 import psutil
 
 
-def setBar(text):
+def setBarDwm(text):
     subprocess.call(["xsetroot", "-name", text])
+
+def setBarDvtm(text):
+    with open(sys.argv[2], 'w') as fifo:
+        fifo.write(text)
+
 
 def pangoFormat(text, bg=None, fg=None, bold=False):
     formatted = ""
@@ -25,6 +33,17 @@ def pangoFormat(text, bg=None, fg=None, bold=False):
         formatted += ' weight="bold"'
     formatted += ">" + text + "</span>"
     return formatted
+
+def nullFormat(text, **args):
+    return text
+
+if len(sys.argv) > 1 and sys.argv[1] == '-dvtm':
+    setBar = setBarDvtm
+    formatText = nullFormat
+else:
+    setBar = setBarDwm
+    formatText = pangoFormat
+
 
 def date():
     return time.strftime('%a %b %d %I:%M %p')
@@ -40,7 +59,7 @@ def volume():
     mixer = alsaaudio.Mixer("Master")
     vol = mixer.getvolume()[0]
     if mixer.getmute()[0]:
-        return pangoFormat(str(vol) + "% Muted",fg="grey")
+        return formatText(str(vol) + "% Muted",fg="grey")
     else:
         return "{0}% Volume".format(vol)
 
@@ -54,7 +73,7 @@ def cpu():
         color = "orange"
     else:
         color = "red"
-    return pangoFormat("{0}% CPU".format(percent),fg=color)
+    return formatText("{0}% CPU".format(percent),fg=color)
 
 def ram():
     percent = round(psutil.virtual_memory().percent)
@@ -66,7 +85,7 @@ def ram():
         color = "orange"
     else:
         color = "red"
-    return pangoFormat("{0}% RAM".format(percent),fg=color)
+    return formatText("{0}% RAM".format(percent),fg=color)
 
 def mail():
     inbox = "/home/ian/.mail/INBOX"
@@ -81,12 +100,12 @@ def mail():
             unread = True
             break
     if unread:
-        return pangoFormat('✉',fg="red")
+        return formatText('✉',fg="red")
     return None
+
 
 items = (volume, cpu, ram, ssid, date, mail)
 divider = ' ❧ '
-
 
 while True:
     output = []
