@@ -8,22 +8,8 @@ import threading
 from email.utils import parseaddr
 from email.parser import BytesHeaderParser
 import abook
-#import pywapi
 import psutil
-#import threading
 
-
-#Check weather every 5 minutes, not each second.
-#w = pywapi.get_weather_from_yahoo('94597')
-#class WeatherThread(threading.Thread):
-#    daemon = True
-#    def run(self):
-#        global w
-#        w = pywapi.get_weather_from_yahoo('94597')
-#        time.sleep(300)
-#WeatherThread().start()
-
-#With old code, chechmail requied its own thread
 
 def setBar(text):
     subprocess.call(["xsetroot", "-name", text])
@@ -102,8 +88,6 @@ def mail():
     return None
 
 items = (volume, cpu, ram, ssid, date, mail)
-#divider = pangoFormat(" | ", fg="grey", bold=True)
-#divider = ' | '
 divider = ' ❧ '
 
 
@@ -114,6 +98,5 @@ while True:
        if value:
            output.append(value)
     setBar(divider.join(output))
-#    print(divider.join(output))
     time.sleep(1)
 
