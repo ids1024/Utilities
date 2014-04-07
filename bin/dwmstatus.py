@@ -3,7 +3,6 @@
 #Statusbar script for dwm and dvtm
 
 import os
-import sys
 import subprocess
 import time
 import alsaaudio
@@ -12,13 +11,17 @@ from email.utils import parseaddr
 from email.parser import BytesHeaderParser
 import abook
 import psutil
+import argparse
 
+argparser = argparse.ArgumentParser(description='Dwm and Dvtm Status Bar')
+argparser.add_argument('--dvtm', help='use with dvtm instead of dwm')
+args = argparser.parse_args()
 
 def setBarDwm(text):
     subprocess.call(["xsetroot", "-name", text])
 
 def setBarDvtm(text):
-    with open(sys.argv[2], 'w') as fifo:
+    with open(args.dvtm, 'w') as fifo:
         fifo.write(text)
 
 
@@ -37,7 +40,7 @@ def pangoFormat(text, bg=None, fg=None, bold=False):
 def nullFormat(text, **args):
     return text
 
-if len(sys.argv) > 1 and sys.argv[1] == '-dvtm':
+if args.dvtm:
     setBar = setBarDvtm
     formatText = nullFormat
 else:
