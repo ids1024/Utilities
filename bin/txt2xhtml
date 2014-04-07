@@ -25,8 +25,11 @@ for filename in sys.argv[1:]:
             line = line.strip('\n')
             line = line.replace('\t','')
 
-            for i in ('...', ' . . . .', '. . . .', '  . . .', ' . . .', '. . .'):
+            for i in ('...', '  . . .', ' . . .', '. . .'):
                 line = line.replace(i, '…')
+
+            for i in (' . . . .', '. . . .'):
+                line = line.replace(i, '….')
             
             line = line.replace('“','"')
             line = line.replace('”','"')
