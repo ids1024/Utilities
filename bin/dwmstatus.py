@@ -16,35 +16,27 @@ argparser = argparse.ArgumentParser(description='Dwm and Dvtm Status Bar')
 argparser.add_argument('--dvtm', help='use with dvtm instead of dwm')
 args = argparser.parse_args()
 
-def setBarDwm(text):
-    subprocess.call(["xsetroot", "-name", text])
-
-def setBarDvtm(text):
-    with open(args.dvtm, 'w') as fifo:
-        fifo.write(text)
-
-
-def pangoFormat(text, bg=None, fg=None, bold=False):
-    formatted = ""
-    formatted += "<span"
-    if bg:
-        formatted += ' background="' + bg + '"'
-    if fg:
-        formatted += ' foreground="' + fg + '"'
-    if bold:
-        formatted += ' weight="bold"'
-    formatted += ">" + text + "</span>"
-    return formatted
-
-def nullFormat(text, **args):
-    return text
-
 if args.dvtm:
-    setBar = setBarDvtm
-    formatText = nullFormat
+    def setBar(text):
+        with open(args.dvtm, 'w') as fifo:
+            fifo.write(text)
+    def formatText(text, **args):
+        return text
 else:
-    setBar = setBarDwm
-    formatText = pangoFormat
+    def setBar(text):
+        subprocess.call(["xsetroot", "-name", text])
+
+    def formatText(text, bg=None, fg=None, bold=False):
+        formatted = ""
+        formatted += "<span"
+        if bg:
+            formatted += ' background="' + bg + '"'
+        if fg:
+            formatted += ' foreground="' + fg + '"'
+        if bold:
+            formatted += ' weight="bold"'
+        formatted += ">" + text + "</span>"
+        return formatted
 
 
 def date():
