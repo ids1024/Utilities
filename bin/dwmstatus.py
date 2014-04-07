@@ -6,7 +6,6 @@ import os
 import subprocess
 import time
 import alsaaudio
-import threading
 from email.utils import parseaddr
 from email.parser import BytesHeaderParser
 import abook
