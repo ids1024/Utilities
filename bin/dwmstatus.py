@@ -55,7 +55,7 @@ def volume():
     if mixer.getmute()[0]:
         return formatText(str(vol) + "% Muted",fg="grey")
     else:
-        return "{0}% Volume".format(vol)
+        return str(vol) + "% Volume"
 
 def cpu():
     percent = (round(psutil.cpu_percent()))
@@ -67,7 +67,7 @@ def cpu():
         color = "orange"
     else:
         color = "red"
-    return formatText("{0}% CPU".format(percent),fg=color)
+    return formatText(str(percent) + "% CPU", fg=color)
 
 def ram():
     percent = round(psutil.virtual_memory().percent)
@@ -79,7 +79,7 @@ def ram():
         color = "orange"
     else:
         color = "red"
-    return formatText("{0}% RAM".format(percent),fg=color)
+    return formatText(str(percent) + "% RAM", fg=color)
 
 def mail():
     inbox = "/home/ian/.mail/INBOX"
