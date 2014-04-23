@@ -1,7 +1,7 @@
 PREFIX = /usr/local
 
 CFLAGS += -std=gnu99 
-LDFLAGS +=
+LDFLAGS += -lcups
 
 #CC = cc
 #CC = musl-gcc

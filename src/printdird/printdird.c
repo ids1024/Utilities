@@ -1,7 +1,7 @@
 #include <sys/inotify.h>
 #include <unistd.h>
-#include <sys/wait.h>
 #include <limits.h>
+#include <cups/cups.h>
 
 #define BUF_LEN ( sizeof(struct inotify_event) + NAME_MAX + 1 )
 
@@ -10,6 +10,10 @@ int main(int argc, char *argv[])
     int notify;
     char buf[BUF_LEN];
     struct inotify_event *event;
+    cups_dest_t *dest;
+    char *printer;
+    char *filename;
+    int job_id;
     const char *watchpath = "/home/ian/.PRINT";
 
     notify = inotify_init();
@@ -23,13 +27,14 @@ int main(int argc, char *argv[])
     {
         read(notify, buf, BUF_LEN);
         event = (struct inotify_event *) &buf[0];
-        if (event->name[0] == '.')
+	filename = event->name;
+        if (filename[0] == '.')
             continue;
-        if(fork() == 0) {
-            execlp("lpr" ,"-r" , event->name, NULL);
-            return 0;
-        }
-        wait(NULL);
-        unlink(event->name);
+
+        dest = cupsGetNamedDest(NULL, NULL, NULL);
+        printer = dest->name;
+        job_id = cupsPrintFile(printer, filename, filename, 0, NULL);
+        cupsStartDocument(CUPS_HTTP_DEFAULT, printer, job_id, NULL, CUPS_FORMAT_AUTO, 1);
+        unlink(filename);
     }
 }
