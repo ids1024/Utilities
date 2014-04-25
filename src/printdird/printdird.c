@@ -23,6 +23,12 @@ int main(int argc, char *argv[])
     if (chdir(watchpath) !=0)
         return 1;
 
+    //Get default printer
+    if ((dest = cupsGetNamedDest(NULL, NULL, NULL)) == NULL ) 
+	    return 1;
+    printer = dest->name;
+
+
     while (1)
     {
         read(notify, buf, BUF_LEN);
@@ -31,8 +37,6 @@ int main(int argc, char *argv[])
         if (filename[0] == '.')
             continue;
 
-        dest = cupsGetNamedDest(NULL, NULL, NULL);
-        printer = dest->name;
         job_id = cupsPrintFile(printer, filename, filename, 0, NULL);
         cupsStartDocument(CUPS_HTTP_DEFAULT, printer, job_id, NULL, CUPS_FORMAT_AUTO, 1);
         unlink(filename);
