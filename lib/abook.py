@@ -7,7 +7,11 @@ infile = "/home/ian/.abook/addressbook"
 
 class AddressBook:
     def __init__(self,contacts):
-        self.contacts=contacts
+        self.contacts = contacts
+        for i in self.contacts:
+            i["email"] = i["email"].split(",")
+            if i["email"] == ['']:
+                i["email"] = []
 
     def __getitem__(self, key):
         if isinstance(key,str):
@@ -35,7 +39,7 @@ class AddressBook:
 
     def __contains__(self, item):
         for i in self.contacts:
-            if i['name'] == item or i['email'] == item:
+            if i['name'] == item or item in i['email']:
                 return True
         return False
 
