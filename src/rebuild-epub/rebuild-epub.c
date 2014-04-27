@@ -34,12 +34,11 @@ int main(int argc, char *argv[])
     strcat(outname, ".new");
 
     infile = fopen(inname, "r");
-    outfile = fopen(outname, "w");
-
     inarc = archive_read_new();
     archive_read_support_format_zip(inarc);
     archive_read_open_FILE(inarc, infile);
 
+    outfile = fopen(outname, "w");
     outarc = archive_write_new();
     archive_write_set_format_zip(outarc);
     archive_write_open_FILE(outarc, outfile);
