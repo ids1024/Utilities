@@ -4,6 +4,7 @@
 #include <libgen.h>
 #include <archive.h>
 #include <archive_entry.h>
+#include <sys/stat.h>
 
 int main(int argc, char *argv[]) {
     struct archive *inarc;
@@ -19,6 +20,7 @@ int main(int argc, char *argv[]) {
     void *buff;
     FILE *file;
     int size;
+    struct stat st;
 
     if (argc == 1) {
         printf("usage: rebuild-epub file\n");
@@ -50,9 +52,9 @@ int main(int argc, char *argv[]) {
 
         if (strcmp(path, "OEBPS/Text") == 0
             && (file = fopen(filename, "rb")) != NULL) {
-            fseek(file, 0L, SEEK_END);
-            size = ftell(file);
-            fseek(file, 0L, SEEK_SET);
+            stat(filename, &st);
+	    size = st.st_size;
+
             buff = malloc(size);
             fread(buff, size, 1, file);
             fclose(file);
