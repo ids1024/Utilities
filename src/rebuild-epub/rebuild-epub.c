@@ -10,6 +10,7 @@ int main(int argc, char *argv[]) {
     struct archive *inarc;
     struct archive *outarc;
     struct archive_entry *entry;
+    struct archive_entry *newentry;
     FILE *infile;
     FILE *outfile;
     char *inname;
@@ -44,7 +45,7 @@ int main(int argc, char *argv[]) {
     archive_write_open_FILE(outarc, outfile);
 
     while (archive_read_next_header(inarc, &entry) != ARCHIVE_EOF) {
-        archive_write_header(outarc, entry);
+        newentry = archive_entry_clone(entry);
 
         fullpath = strdup(archive_entry_pathname(entry));
         filename = basename(fullpath);
@@ -66,6 +67,7 @@ int main(int argc, char *argv[]) {
             archive_read_data(inarc, buff, size);
         }
         free(fullpath); 
+        archive_write_header(outarc, newentry);
         archive_write_data(outarc, buff, size);
         free(buff);
     }

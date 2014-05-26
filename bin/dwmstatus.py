@@ -82,7 +82,7 @@ def ram():
     return formatText(str(percent) + "% RAM", fg=color)
 
 def mail():
-    inbox = "/home/ian/.mail/INBOX"
+    inbox = "/home/ian/.mail/perebruin/INBOX"
     addressbook = abook.get_abook()
     unread = False
     parser = BytesHeaderParser()
