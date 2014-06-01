@@ -1,1 +1,9 @@
-A collection of various simple scripts, probably all poorly implemented.
+A collection of various simple scripts, probably all poorly implemented. Some include hardcoded paths.
+
+aurphan: Simplified version of http://kmkeen.com/aurphan/ implemented in python instead of bash.
+dwmstatus.py: My statusbar for dwm and dvtm.
+feed-grab: Find rss or atom feed in a website and add to newsbeuter. Implemented in python.
+printdird: Prints files added to a directory and deletes them. Designed to serve as a crude print server combined with ftp. Coded in c.
+rebuild-epub: Replaces xhtml files inside and epub with those in the xhtml directory.
+txt2xhtml: Python script to convert a text file to xhtml. Designed for processing text files exported by Libreoffice.
+xstart: Startx in python
