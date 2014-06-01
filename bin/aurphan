@@ -1,0 +1,19 @@
+#!/usr/bin/python3
+
+import AUR
+#import subprocess
+from pycman import config
+
+#foreignpkgs = subprocess.check_output(["pacman", "-Qmq"]).decode().split("\n")
+
+handle = config.init_with_config("/etc/pacman.conf")
+syncpkgs = set(pkg.name for db in handle.get_syncdbs() for pkg in db.pkgcache)
+localpkgs = set(pkg.name for pkg in handle.get_localdb().pkgcache)
+foreignpkgs = localpkgs.difference(syncpkgs)
+
+aur = AUR.RPC.AUR()
+aur.chwarn(lambda x,y: None) #Do not print warnings
+
+for pkg in aur.info(foreignpkgs):
+    if pkg["Maintainer"] == "":
+        print("https://aur.archlinux.org/packages/" + pkg["Name"] + "/ \033[1;32m" + str(pkg["NumVotes"]) + " votes\033[1;m")
