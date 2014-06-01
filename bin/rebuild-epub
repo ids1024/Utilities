@@ -1,1 +1,27 @@
-../src/rebuild-epub/rebuild-epub
+#!/usr/bin/env python
+
+import os
+import sys
+from io import BytesIO
+from zipfile import ZipFile
+
+epubpath = os.path.abspath(sys.argv[1])
+tmpfile = BytesIO()
+
+epubfile = ZipFile(epubpath)
+tmpepub = ZipFile(tmpfile,'w')
+
+os.chdir('xhtml')
+
+for i in epubfile.infolist():
+    path, basename = i.filename.rpartition('/')[::2]
+    if path == 'OEBPS/Text' and basename in os.listdir():
+        tmpepub.write(basename, i.filename)
+        print('Replaced ' + i.filename)
+    else:
+        tmpepub.writestr(i, epubfile.read(i))
+epubfile.close()
+tmpepub.close()
+
+with open(epubpath, 'wb') as file:
+    file.write(tmpfile.getvalue())
