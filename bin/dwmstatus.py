@@ -40,7 +40,7 @@ else:
 
 
 def date():
-    return time.strftime('%a %b %d %R')
+    return time.strftime('%a %b %d %l:%M %P')
 
 def ssid():
     output = subprocess.check_output(('iwconfig','wlan0')).decode().split('\n')[0]
