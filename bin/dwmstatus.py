@@ -84,17 +84,14 @@ def ram():
 def mail():
     inbox = "/home/ian/.mail/perebruin/INBOX"
     addressbook = abook.get_abook()
-    unread = False
     parser = BytesHeaderParser()
     os.chdir(inbox+"/new")
     for i in os.listdir():
         with open(i, 'rb') as file:
             email = parser.parse(file)
         if parseaddr(email.get('from'))[1] in addressbook:
-            unread = True
-            break
-    if unread:
-        return formatText('✉',fg="red")
+            return formatText('✉',fg="red")
+        return '✉'
     return None
 
 
@@ -109,4 +106,3 @@ while True:
            output.append(value)
     setBar(divider.join(output))
     time.sleep(1)
-
