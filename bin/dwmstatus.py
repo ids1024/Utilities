@@ -81,6 +81,8 @@ def ram():
         color = "red"
     return formatText(str(percent) + "% RAM", fg=color)
 
+
+
 def mail():
     inbox = "/home/ian/.mail/perebruin/INBOX"
     addressbook = abook.get_abook()
@@ -90,12 +92,11 @@ def mail():
         with open(i, 'rb') as file:
             email = parser.parse(file)
         if parseaddr(email.get('from'))[1] in addressbook:
-            return formatText('✉',fg="red")
-        return '✉'
-    return None
+            return formatText('  ✉',fg="red")
+        return '  ✉'
+    return ''
 
-
-items = (volume, cpu, ram, ssid, date, mail)
+items = (volume, cpu, ram, ssid, date)
 divider = ' ❧ '
 
 while True:
@@ -104,5 +105,5 @@ while True:
        value = i()
        if value:
            output.append(value)
-    setBar(divider.join(output))
+    setBar(divider.join(output) + mail())
     time.sleep(1)
