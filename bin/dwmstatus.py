@@ -88,11 +88,14 @@ def mail():
     addressbook = abook.get_abook()
     parser = BytesHeaderParser()
     os.chdir(inbox+"/new")
+    unread = False
     for i in os.listdir():
         with open(i, 'rb') as file:
             email = parser.parse(file)
         if parseaddr(email.get('from'))[1] in addressbook:
             return formatText('  ✉',fg="red")
+        unread = True
+    if unread:
         return '  ✉'
     return ''
 
