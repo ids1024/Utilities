@@ -5,6 +5,7 @@
 #include <archive.h>
 #include <archive_entry.h>
 #include <sys/stat.h>
+#include <errno.h>
 
 int main(int argc, char *argv[]) {
     struct archive *inarc;
@@ -24,11 +25,15 @@ int main(int argc, char *argv[]) {
     struct stat st;
 
     if (argc == 1) {
-        printf("usage: rebuild-epub file\n");
+        fprintf(stderr, "usage: rebuild-epub file\n");
         return 1;
     }
 
     inname = realpath(argv[1], NULL);
+    if (inname == NULL) {
+        perror(NULL);
+	return 1;
+    }
 
     outname = malloc(strlen(inname) + 4);
     strcpy(outname, inname);
@@ -36,11 +41,17 @@ int main(int argc, char *argv[]) {
 
     inarc = archive_read_new();
     archive_read_support_format_zip(inarc);
-    archive_read_open_filename(inarc, inname, sysconf(_SC_PAGESIZE));
+    if (archive_read_open_filename(inarc, inname, sysconf(_SC_PAGESIZE)) != ARCHIVE_OK) {
+        fprintf(stderr, "%s", archive_error_string(inarc));
+	return 1;
+    }
 
     outarc = archive_write_new();
     archive_write_set_format_zip(outarc);
-    archive_write_open_filename(outarc, outname);
+    if (archive_write_open_filename(outarc, outname) != ARCHIVE_OK) {
+        fprintf(stderr, "%s", archive_error_string(outarc));
+	return 1;
+    }
 
     while (archive_read_next_header(inarc, &entry) != ARCHIVE_EOF) {
         newentry = archive_entry_clone(entry);
