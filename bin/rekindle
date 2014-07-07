@@ -2,7 +2,7 @@
 
 cd xhtml
 txt2xhtml ../txt/*
-rebuild-epub "$1"
+rebuild-epub "../$1"
 cd ..
 kindlegen "$1"
 mount /media/sdb1 || exit 1
