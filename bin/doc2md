@@ -1,0 +1,8 @@
+#!/bin/bash
+libreoffice --headless --convert-to html *.doc --outdir md
+cd md
+for i in *
+do
+	pandoc "$i" -o "${i%.html}.md"
+	rm "$i"
+done
