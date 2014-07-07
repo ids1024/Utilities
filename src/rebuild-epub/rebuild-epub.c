@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    inname = argv[1];
+    inname = realpath(argv[1], NULL);
 
     outname = malloc(strlen(inname) + 4);
     strcpy(outname, inname);
@@ -74,5 +74,7 @@ int main(int argc, char *argv[]) {
     archive_write_free(outarc);
 
     rename(outname, inname);
+    free(inname);
+    free(outname);
     return 0;
 }
