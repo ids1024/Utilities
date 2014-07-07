@@ -34,15 +34,13 @@ int main(int argc, char *argv[]) {
     strcpy(outname, inname);
     strcat(outname, ".new");
 
-    infile = fopen(inname, "r");
     inarc = archive_read_new();
     archive_read_support_format_zip(inarc);
-    archive_read_open_FILE(inarc, infile);
+    archive_read_open_filename(inarc, inname, sysconf(_SC_PAGESIZE));
 
-    outfile = fopen(outname, "w");
     outarc = archive_write_new();
     archive_write_set_format_zip(outarc);
-    archive_write_open_FILE(outarc, outfile);
+    archive_write_open_filename(outarc, outname);
 
     while (archive_read_next_header(inarc, &entry) != ARCHIVE_EOF) {
         newentry = archive_entry_clone(entry);
@@ -73,9 +71,7 @@ int main(int argc, char *argv[]) {
     }
 
     archive_read_free(inarc);
-    fclose(infile);
     archive_write_free(outarc);
-    fclose(outfile);
 
     rename(outname, inname);
     return 0;
