@@ -12,11 +12,3 @@ class Task:
         self.process = Popen(self.command)
         if not self.background:
             self.process.wait()
-
-
-class Environments:
-    def __init__(self):
-        self.list=[]
-
-    def add(self,*args,name=None,Title=None):
-        self.list.append(*args,name=name,title=title)
