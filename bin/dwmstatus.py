@@ -49,8 +49,8 @@ if os.path.exists(tmpdir):
 if args.stop:
     exit()
 
-#if os.fork() != 0: #Run in background
-#    exit()
+if os.fork() != 0: #Run in background
+    exit()
 
 os.mkdir(tmpdir)
 with open(tmpdir + "/pidfile", 'w') as file:
