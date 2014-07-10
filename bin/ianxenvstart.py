@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 import sys
-from subprocess import Popen,call
+import os
+from subprocess import Popen
 
 from importlib.machinery import SourceFileLoader
 
@@ -16,5 +17,5 @@ if environment[2]:
             i.run()
     else:
         environment[2].run()
-call(environment[1])
+os.execlp(environment[1], environment[1])
 
