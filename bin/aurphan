@@ -12,7 +12,6 @@ localpkgs = set(pkg.name for pkg in handle.get_localdb().pkgcache)
 foreignpkgs = localpkgs.difference(syncpkgs)
 
 aur = AUR.RPC.AUR()
-aur.chwarn(lambda x,y: None) #Do not print warnings
 
 for pkg in aur.info(foreignpkgs):
     if pkg["Maintainer"] == "":
