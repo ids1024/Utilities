@@ -4,18 +4,18 @@
 #include <cups/cups.h>
 
 #define BUF_LEN ( sizeof(struct inotify_event) + NAME_MAX + 1 )
+#define WATCHPATH "/home/ian/.PRINT"
 
 int main(int argc, char *argv[]) {
     int notify;
     cups_dest_t *dest;
     char *printer;
-    const char *watchpath = "/home/ian/.PRINT";
 
     notify = inotify_init();
     
-    if (inotify_add_watch(notify, watchpath, IN_CLOSE_WRITE) == -1)
+    if (inotify_add_watch(notify, WATCHPATH, IN_CLOSE_WRITE) == -1)
         return 1;
-    if (chdir(watchpath) !=0)
+    if (chdir(WATCHPATH) !=0)
         return 1;
 
     //Get default printer
