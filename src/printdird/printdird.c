@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
     
     if (inotify_add_watch(notify, WATCHPATH, IN_CLOSE_WRITE) == -1)
         return 1;
-    if (chdir(WATCHPATH) !=0)
+    if (chdir(WATCHPATH) != 0)
         return 1;
 
     //Get default printer
