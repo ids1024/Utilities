@@ -44,15 +44,12 @@ int main(int argc, char *argv[]) {
     }
 
     while (archive_read_next_header(inarc, &entry) != ARCHIVE_EOF) {
-        struct archive_entry *newentry;
         char *fullpath;
         char *path;
         char *filename;
         void *buff;
         FILE *file;
         int size;
-
-        newentry = archive_entry_clone(entry);
 
         fullpath = strdup(archive_entry_pathname(entry));
         filename = basename(fullpath);
@@ -76,9 +73,8 @@ int main(int argc, char *argv[]) {
             archive_read_data(inarc, buff, size);
         }
         free(fullpath); 
-        archive_write_header(outarc, newentry);
+        archive_write_header(outarc, entry);
         archive_write_data(outarc, buff, size);
-	archive_entry_free(newentry);
         free(buff);
     }
 
