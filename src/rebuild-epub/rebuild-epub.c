@@ -11,18 +11,8 @@ int main(int argc, char *argv[]) {
     struct archive *inarc;
     struct archive *outarc;
     struct archive_entry *entry;
-    struct archive_entry *newentry;
-    FILE *infile;
-    FILE *outfile;
     char *inname;
     char *outname;
-    char *fullpath;
-    char *path;
-    char *filename;
-    void *buff;
-    FILE *file;
-    int size;
-    struct stat st;
 
     if (argc == 1) {
         fprintf(stderr, "usage: rebuild-epub file\n");
@@ -54,6 +44,14 @@ int main(int argc, char *argv[]) {
     }
 
     while (archive_read_next_header(inarc, &entry) != ARCHIVE_EOF) {
+        struct archive_entry *newentry;
+        char *fullpath;
+        char *path;
+        char *filename;
+        void *buff;
+        FILE *file;
+        int size;
+
         newentry = archive_entry_clone(entry);
 
         fullpath = strdup(archive_entry_pathname(entry));
@@ -62,6 +60,8 @@ int main(int argc, char *argv[]) {
 
         if (strcmp(path, "OEBPS/Text") == 0
             && (file = fopen(filename, "rb")) != NULL) {
+            struct stat st;
+
             stat(filename, &st);
 	    size = st.st_size;
 
