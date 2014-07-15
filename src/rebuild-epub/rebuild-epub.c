@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
 	return 1;
     }
 
-    outname = malloc(strlen(inname) + 4);
+    outname = malloc(strlen(inname) + 5);
     strcpy(outname, inname);
     strcat(outname, ".new");
 
