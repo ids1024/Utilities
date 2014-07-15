@@ -78,6 +78,7 @@ int main(int argc, char *argv[]) {
         free(fullpath); 
         archive_write_header(outarc, newentry);
         archive_write_data(outarc, buff, size);
+	archive_entry_free(newentry);
         free(buff);
     }
 
