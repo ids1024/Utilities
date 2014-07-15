@@ -21,8 +21,8 @@ int main(int argc, char *argv[]) {
     //Get default printer
     if ((dest = cupsGetNamedDest(NULL, NULL, NULL)) == NULL ) 
 	    return 1;
-    printer = dest->name;
-
+    printer = strdup(dest->name);
+    free(dest);
 
     while (1) {
         char buf[BUF_LEN];
