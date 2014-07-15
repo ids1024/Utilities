@@ -7,12 +7,8 @@
 
 int main(int argc, char *argv[]) {
     int notify;
-    char buf[BUF_LEN];
-    struct inotify_event *event;
     cups_dest_t *dest;
     char *printer;
-    char *filename;
-    int job_id;
     const char *watchpath = "/home/ian/.PRINT";
 
     notify = inotify_init();
@@ -29,6 +25,11 @@ int main(int argc, char *argv[]) {
 
 
     while (1) {
+        char buf[BUF_LEN];
+        struct inotify_event *event;
+        char *filename;
+        int job_id;
+
         read(notify, buf, BUF_LEN);
         event = (struct inotify_event *) &buf[0];
 	filename = event->name;
