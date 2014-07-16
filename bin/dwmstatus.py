@@ -92,7 +92,6 @@ while True:
             logging.info("Exiting.")
             exitprogram()
 
-
     output = zip(*filter(None, (i() for i in conf.items)))
     mail = conf.mail()
     outstring = conf.divider.join(next(output)) + mail[0]
@@ -103,7 +102,6 @@ while True:
 
     for fifo in dvtmfifos.copy():
         setDvtmBar(outstring, fifo)
-
 
     if len(dwmsessions) == 0 and len(dvtmfifos) == 0:
         logging.info("No more clients. Exiting.")
