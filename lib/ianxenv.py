@@ -1,6 +1,6 @@
 from subprocess import Popen,call
 
-class Task:
+class Task(object):
     command = None
     process = None
     background = None

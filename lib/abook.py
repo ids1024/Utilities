@@ -5,7 +5,7 @@ fields = ('name', 'email', 'phone', 'mobile')
 infile = "/home/ian/.abook/addressbook"
 
 
-class AddressBook:
+class AddressBook(object):
     def __init__(self,contacts):
         self.contacts = contacts
         for i in self.contacts:
