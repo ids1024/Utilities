@@ -6,9 +6,9 @@ from subprocess import Popen
 
 from importlib.machinery import SourceFileLoader
 
-Popen(("xrdb","-merge","/home/ian/.Xresources"))
+Popen(("xrdb","-merge",os.path.expanduser("~/.Xresources")))
 
-conf = SourceFileLoader("conf","/home/ian/.xinitrc.py").load_module()
+conf = SourceFileLoader("conf", os.path.expanduser("~/.xinitrc.py")).load_module()
 environment = conf.environments[int(sys.argv[1])]
 
 if environment[2]:

@@ -7,9 +7,9 @@ import argparse
 
 from importlib.machinery import SourceFileLoader
 
-os.chdir("/home/ian")
+os.chdir(os.path.expanduser('~'))
 
-conf = SourceFileLoader("conf", "/home/ian/.xinitrc.py").load_module()
+conf = SourceFileLoader("conf", os.path.expanduser("~/.xinitrc.py")).load_module()
 envs = [i[0] for i in conf.environments]
 
 argparser = argparse.ArgumentParser(description='Python based xinit wraper.')

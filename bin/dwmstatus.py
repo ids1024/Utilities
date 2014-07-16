@@ -12,7 +12,7 @@ import shutil
 import logging
 
 from importlib.machinery import SourceFileLoader
-conf = SourceFileLoader("conf", "/home/ian/.dwmstatusrc").load_module()
+conf = SourceFileLoader("conf", os.path.expanduser("~/.dwmstatusrc")).load_module()
 
 logging.basicConfig(
         filename="/tmp/dwmstatus.log",
