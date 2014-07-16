@@ -44,7 +44,7 @@ class AddressBook(object):
         return False
 
 def get_abook():
-    outputformat = '\t'.join(['{'+i+'}' for i in fields])
+    outputformat = '\t'.join('{'+i+'}' for i in fields)
     command = ('abook', '--convert', '--infile', infile, '--outformat', 'custom' ,'--outformatstr', outputformat)
     output = subprocess.check_output(command).decode().strip('\n')
     contacts = [dict(zip(fields,i.split('\t'))) for i in output.split('\n')]
