@@ -96,15 +96,10 @@ while True:
         logging.info("No more clients. Exiting.")
         exitprogram()
 
-    output = []
-    formatedoutput = []
-    for i in conf.items:
-       value = i()
-       if value:
-           output.append(value[0])
-           formatedoutput.append(value[1])
-    outstring = conf.divider.join(output) + conf.mail()[0]
-    formatedoutstring = conf.divider.join(formatedoutput) + conf.mail()[1]
+    output = zip(*filter(None, (i() for i in conf.items)))
+    mail = conf.mail()
+    outstring = conf.divider.join(next(output)) + mail[0]
+    formatedoutstring = conf.divider.join(next(output)) + mail[1]
 
     for display in dwmsessions.copy():
         setDwmBar(formatedoutstring, display)
