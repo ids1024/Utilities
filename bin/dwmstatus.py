@@ -71,11 +71,11 @@ def setDvtmBar(text, fifopath):
             fifo.write(text + '\n')
     except OSError: #Not open for reading
         logging.info("Discarding " + fifopath)
-        removefifos.append(fifopath)
+        dvtmfifos.discard(fifopath)
 
 def setDwmBar(text, display):
     if subprocess.call(["xsetroot", "-name", text],env={"DISPLAY":display}) != 0:
-        removedisplays.append(display)
+        dwmsessions.discard(display)
 
 def exitprogram():
     shutil.rmtree(conf.tmpdir)
@@ -109,14 +109,10 @@ while True:
     outstring = conf.divider.join(output) + conf.mail()[0]
     formatedoutstring = conf.divider.join(formatedoutput) + conf.mail()[1]
 
-    removedisplays = [] #Cannot remove while iterating over set TODO: Better way.
-    for display in dwmsessions:
+    for display in dwmsessions.copy():
         setDwmBar(formatedoutstring, display)
-    for i in removedisplays: dwmsessions.discard(i)
 
-    removefifos = []
-    for fifo in dvtmfifos:
+    for fifo in dvtmfifos.copy():
         setDvtmBar(outstring, fifo)
-    for i in removefifos: dvtmfifos.discard(i)
 
     time.sleep(1)
