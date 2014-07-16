@@ -159,8 +159,8 @@ def mail():
             return formatText('  ✉',fg="red")
         unread = True
     if unread:
-        return '  ✉'
-    return ''
+        return formatText('  ✉')
+    return formatText('')
 
 items = (volume, cpu, ram, ssid, date)
 divider = ' ❧ '
@@ -188,8 +188,8 @@ while True:
        if value:
            output.append(value[0])
            formatedoutput.append(value[1])
-    outstring = divider.join(output) + mail()
-    formatedoutstring = divider.join(formatedoutput) + mail()
+    outstring = divider.join(output) + mail()[0]
+    formatedoutstring = divider.join(formatedoutput) + mail()[1]
 
     removedisplays = [] #Cannot remove while iterating over set TODO: Better way.
     for display in dwmsessions:
