@@ -42,9 +42,6 @@ if os.path.exists(conf.tmpdir):
     except OSError: # is os.kill fails
         shutil.rmtree(conf.tmpdir)
 
-if args.stop:
-    exit()
-
 if os.fork() != 0: #Run in background
     exit()
 
