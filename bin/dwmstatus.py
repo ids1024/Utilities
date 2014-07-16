@@ -71,9 +71,6 @@ else:
 
 def setDvtmBar(text, fifopath):
     try:
-        #fifo = os.open(fifopath,  os.O_WRONLY | os.O_NONBLOCK)
-        #os.write(fifo, text.encode() + b'\n')
-        #os.close(fifo)
         with open(fifopath, 'w', opener=opener) as fifo:
             fifo.write(text + '\n')
     except OSError: #Not open for reading
