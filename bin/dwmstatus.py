@@ -1,22 +1,18 @@
 #!/usr/bin/env python
 
 #Statusbar script for dwm and dvtm
-#TODO: Warnings and errors, string formatting
+#TODO: Warnings and errors, string formatting, proper mail() integration
 
 
 import os
 import subprocess
 import time
-import alsaaudio
-from email.utils import parseaddr
-from email.parser import BytesHeaderParser
-import abook
-import psutil
 import argparse
 import shutil
 import logging
 
-tmpdir = "/tmp/dwmstatus"
+from importlib.machinery import SourceFileLoader
+conf = SourceFileLoader("conf", "/home/ian/.dwmstatusrc").load_module()
 
 logging.basicConfig(
         filename="/tmp/dwmstatus.log",
@@ -29,9 +25,9 @@ argparser.add_argument('--dvtm', help='Use with dvtm instead of dwm')
 argparser.add_argument('--stop', action='store_true', help='Stop server')
 args = argparser.parse_args()
 
-if os.path.exists(tmpdir):
+if os.path.exists(conf.tmpdir):
     try:
-        with open(tmpdir + "/pidfile") as file:
+        with open(conf.tmpdir + "/pidfile") as file:
             os.kill(int(file.read()), 0) #test if process exists
         if args.stop:
             cmd = "exit"
@@ -39,12 +35,12 @@ if os.path.exists(tmpdir):
             cmd = "dvtm " + args.dvtm
         else:
             cmd = "dwm " + os.environ["DISPLAY"]
-        with open(tmpdir + "/ctl", 'w') as fifo:
+        with open(conf.tmpdir + "/ctl", 'w') as fifo:
             fifo.write(cmd)
         exit()
 
     except OSError: # is os.kill fails
-        shutil.rmtree(tmpdir)
+        shutil.rmtree(conf.tmpdir)
 
 if args.stop:
     exit()
@@ -52,14 +48,14 @@ if args.stop:
 if os.fork() != 0: #Run in background
     exit()
 
-os.mkdir(tmpdir)
-with open(tmpdir + "/pidfile", 'w') as file:
+os.mkdir(conf.tmpdir)
+with open(conf.tmpdir + "/pidfile", 'w') as file:
     file.write(str(os.getpid()))
 
-os.mkfifo(tmpdir + "/ctl")
+os.mkfifo(conf.tmpdir + "/ctl")
 def opener(file, flags):
     return os.open(file, flags | os.O_NONBLOCK)
-ctlfifo = open(tmpdir + "/ctl", opener=opener)
+ctlfifo = open(conf.tmpdir + "/ctl", opener=opener)
 dvtmfifos = set()
 dwmsessions = set()
 
@@ -81,86 +77,11 @@ def setDwmBar(text, display):
     if subprocess.call(["xsetroot", "-name", text],env={"DISPLAY":display}) != 0:
         removedisplays.append(display)
 
-def formatText(text, bg=None, fg=None, bold=False):
-    formatted = ""
-    formatted += "<span"
-    if bg:
-        formatted += ' background="' + bg + '"'
-    if fg:
-        formatted += ' foreground="' + fg + '"'
-    if bold:
-        formatted += ' weight="bold"'
-    formatted += ">" + text + "</span>"
-    return (text, formatted)
-
 def exitprogram():
-    shutil.rmtree(tmpdir)
+    shutil.rmtree(conf.tmpdir)
     ctlfifo.close()
     exit()
 
-
-
-
-def date():
-    return formatText(time.strftime('%a %b %d %I:%M %p'))
-
-def ssid():
-    output = subprocess.check_output(('iwconfig','wlan0')).decode().split('\n')[0]
-    if 'off/any' in output:
-        return None
-    else:
-        return formatText(output.split('"')[1])
-
-def volume():
-    mixer = alsaaudio.Mixer("Master")
-    vol = mixer.getvolume()[0]
-    if mixer.getmute()[0]:
-        return formatText(str(vol) + "% Muted",fg="grey")
-    else:
-        return formatText("{0}% Volume".format(vol))
-
-def cpu():
-    percent = (round(psutil.cpu_percent()))
-    if percent < 20:
-        color = None
-    elif percent < 50:
-        color = "yellow"
-    elif percent < 80:
-        color = "orange"
-    else:
-        color = "red"
-    return formatText("{0}% CPU".format(percent),fg=color)
-
-def ram():
-    percent = round(psutil.virtual_memory().percent)
-    if percent < 20:
-        color = None
-    elif percent < 50:
-        color = "yellow"
-    elif percent < 80:
-        color = "orange"
-    else:
-        color = "red"
-    return formatText("{0}% RAM".format(percent),fg=color)
-
-def mail():
-    inbox = "/home/ian/.mail/perebruin/INBOX"
-    addressbook = abook.get_abook()
-    parser = BytesHeaderParser()
-    os.chdir(inbox+"/new")
-    unread = False
-    for i in os.listdir():
-        with open(i, 'rb') as file:
-            email = parser.parse(file)
-        if parseaddr(email.get('from'))[1] in addressbook:
-            return formatText('  ✉',fg="red")
-        unread = True
-    if unread:
-        return formatText('  ✉')
-    return formatText('')
-
-items = (volume, cpu, ram, ssid, date)
-divider = ' ❧ '
 
 
 while True:
@@ -180,13 +101,13 @@ while True:
 
     output = []
     formatedoutput = []
-    for i in items:
+    for i in conf.items:
        value = i()
        if value:
            output.append(value[0])
            formatedoutput.append(value[1])
-    outstring = divider.join(output) + mail()[0]
-    formatedoutstring = divider.join(formatedoutput) + mail()[1]
+    outstring = conf.divider.join(output) + conf.mail()[0]
+    formatedoutstring = conf.divider.join(formatedoutput) + conf.mail()[1]
 
     removedisplays = [] #Cannot remove while iterating over set TODO: Better way.
     for display in dwmsessions:
