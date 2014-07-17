@@ -50,7 +50,7 @@ def cpu():
         color = "orange"
     else:
         color = "red"
-    return formatText(str(percent) + "{0}% CPU", fg=color)
+    return formatText(str(percent) + "% CPU", fg=color)
 
 def ram():
     percent = round(psutil.virtual_memory().percent)
