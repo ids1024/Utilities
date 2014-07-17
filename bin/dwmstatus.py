@@ -71,7 +71,7 @@ def setDvtmBar(text, fifopath):
         dvtmfifos.discard(fifopath)
 
 def setDwmBar(text, display):
-    if subprocess.call(["xsetroot", "-name", text],env={"DISPLAY":display}) != 0:
+    if subprocess.call(("xsetroot", "-name", text),env={"DISPLAY":display}) != 0:
         dwmsessions.discard(display)
 
 def exitprogram():

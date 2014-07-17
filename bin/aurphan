@@ -4,7 +4,7 @@ import AUR
 #import subprocess
 from pycman import config
 
-#foreignpkgs = subprocess.check_output(["pacman", "-Qmq"]).decode().split("\n")
+#foreignpkgs = subprocess.check_output(("pacman", "-Qmq")).decode().split("\n")
 
 handle = config.init_with_config("/etc/pacman.conf")
 syncpkgs = set(pkg.name for db in handle.get_syncdbs() for pkg in db.pkgcache)
