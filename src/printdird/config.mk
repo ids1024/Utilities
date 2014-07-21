@@ -1,6 +1,6 @@
 PREFIX = /usr/local
 
-CFLAGS += -std=gnu99 
+CFLAGS += -std=gnu99 -Wall -pedantic
 LDFLAGS += -lcups
 
 #CC = cc
