@@ -1,5 +1,5 @@
 #!/bin/bash
-libreoffice --headless --convert-to html *.doc --outdir md
+libreoffice --headless --convert-to html *.doc *.docx --outdir md
 cd md
 for i in *
 do
