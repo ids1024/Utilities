@@ -83,7 +83,7 @@ if os.path.exists(conf.tmpdir):
             fifo.write(cmd)
         exit()
 
-    except OSError:  # is os.kill fails
+    except OSError:  # If os.kill fails:
         shutil.rmtree(conf.tmpdir)
 
 if os.fork() != 0:  # Run in background
