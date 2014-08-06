@@ -11,13 +11,33 @@ import argparse
 import shutil
 import logging
 
+from importlib.machinery import SourceFileLoader
+conf = SourceFileLoader("conf", os.path.expanduser("~/.dwmstatusrc")).load_module()
+
+
+
 #Use with open() to open a fifo in nonblocking mode
 def opener(file, flags):
     return os.open(file, flags | os.O_NONBLOCK)
 
+def setDvtmBar(text, fifopath):
+    try:
+        with open(fifopath, 'w', opener=opener) as fifo:
+            fifo.write(text + '\n')
+    except OSError: #Not open for reading
+        logging.info("Discarding " + fifopath)
+        dvtmfifos.discard(fifopath)
 
-from importlib.machinery import SourceFileLoader
-conf = SourceFileLoader("conf", os.path.expanduser("~/.dwmstatusrc")).load_module()
+def setDwmBar(text, display):
+    if subprocess.call(("xsetroot", "-name", text),env={"DISPLAY":display}) != 0:
+        dwmsessions.discard(display)
+
+def exitprogram():
+    shutil.rmtree(conf.tmpdir)
+    ctlfifo.close()
+    exit()
+
+
 
 logging.basicConfig(
         filename="/tmp/dwmstatus.log",
@@ -59,29 +79,10 @@ ctlfifo = open(conf.tmpdir + "/ctl", opener=opener)
 dvtmfifos = set()
 dwmsessions = set()
 
-
 if args.dvtm:
     dvtmfifos.add(args.dvtm)
 else:
     dwmsessions.add(os.environ["DISPLAY"])
-
-def setDvtmBar(text, fifopath):
-    try:
-        with open(fifopath, 'w', opener=opener) as fifo:
-            fifo.write(text + '\n')
-    except OSError: #Not open for reading
-        logging.info("Discarding " + fifopath)
-        dvtmfifos.discard(fifopath)
-
-def setDwmBar(text, display):
-    if subprocess.call(("xsetroot", "-name", text),env={"DISPLAY":display}) != 0:
-        dwmsessions.discard(display)
-
-def exitprogram():
-    shutil.rmtree(conf.tmpdir)
-    ctlfifo.close()
-    exit()
-
 
 
 while True:
