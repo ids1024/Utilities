@@ -74,11 +74,12 @@ def mail():
         with open(i, 'rb') as file:
             email = parser.parse(file)
         if parseaddr(email.get('from'))[1] in addressbook:
-            return formatText('  ✉',fg="red")
+            return formatText('✉',fg="red")
         unread = True
     if unread:
-        return formatText('  ✉')
-    return formatText('')
+        return formatText('✉')
+    return None
 
 items = (volume, cpu, ram, ssid, date)
+indicators = (mail,)
 divider = ' ❧ '

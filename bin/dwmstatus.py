@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #Statusbar script for dwm and dvtm
-#TODO: Warnings and errors, string formatting, proper mail() integration
+#TODO: Warnings and errors, string formatting
 
 
 import os
@@ -31,6 +31,23 @@ def setDvtmBar(text, fifopath):
 def setDwmBar(text, display):
     if subprocess.call(("xsetroot", "-name", text),env={"DISPLAY":display}) != 0:
         dwmsessions.discard(display)
+
+def genOutput():
+    output = zip(*filter(None, (i() for i in conf.items)))
+    indoutput = zip(*filter(None, (i() for i in conf.indicators)))
+
+    outstring = conf.divider.join(next(output,()))
+    indstring = ' '.join(next(indoutput,()))
+    if indstring:
+        outstring += '  ' + indstring
+
+    formattedoutstring = conf.divider.join(next(output,()))
+    formattedindstring = ' '.join(next(indoutput,()))
+    if formattedindstring:
+        formattedoutstring += '  ' + formattedindstring
+
+    return (outstring, formattedoutstring)
+
 
 def exitprogram():
     shutil.rmtree(conf.tmpdir)
@@ -96,16 +113,13 @@ while True:
             logging.info("Exiting.")
             exitprogram()
 
-    output = zip(*filter(None, (i() for i in conf.items)))
-    mail = conf.mail()
-    outstring = conf.divider.join(next(output)) + mail[0]
-    formatedoutstring = conf.divider.join(next(output)) + mail[1]
+    output = genOutput()
 
     for display in dwmsessions.copy():
-        setDwmBar(formatedoutstring, display)
+        setDwmBar(output[1], display)
 
     for fifo in dvtmfifos.copy():
-        setDvtmBar(outstring, fifo)
+        setDvtmBar(output[1], fifo)
 
     if len(dwmsessions) == 0 and len(dvtmfifos) == 0:
         logging.info("No more clients. Exiting.")
