@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-#Statusbar script for dwm and dvtm
-#TODO: Warnings and errors, string formatting
+# Statusbar script for dwm and dvtm
+# TODO: Warnings and errors, string formatting
 
 
 import os
@@ -12,37 +12,40 @@ import shutil
 import logging
 
 from importlib.machinery import SourceFileLoader
-conf = SourceFileLoader("conf", os.path.expanduser("~/.dwmstatusrc")).load_module()
+conf = SourceFileLoader(
+    "conf", os.path.expanduser("~/.dwmstatusrc")).load_module()
 
 
-
-#Use with open() to open a fifo in nonblocking mode
+# Use with open() to open a fifo in nonblocking mode
 def opener(file, flags):
     return os.open(file, flags | os.O_NONBLOCK)
+
 
 def setDvtmBar(text, fifopath):
     try:
         with open(fifopath, 'w', opener=opener) as fifo:
             fifo.write(text + '\n')
-    except OSError: #Not open for reading
+    except OSError:  # Not open for reading
         logging.info("Discarding " + fifopath)
         dvtmfifos.discard(fifopath)
 
+
 def setDwmBar(text, display):
-    if subprocess.call(("xsetroot", "-name", text),env={"DISPLAY":display}) != 0:
+    if subprocess.call(("xsetroot", "-name", text), env={"DISPLAY": display}) != 0:
         dwmsessions.discard(display)
+
 
 def genOutput():
     output = zip(*filter(None, (i() for i in conf.items)))
     indoutput = zip(*filter(None, (i() for i in conf.indicators)))
 
-    outstring = conf.divider.join(next(output,()))
-    indstring = ' '.join(next(indoutput,()))
+    outstring = conf.divider.join(next(output, ()))
+    indstring = ' '.join(next(indoutput, ()))
     if indstring:
         outstring += '  ' + indstring
 
-    formattedoutstring = conf.divider.join(next(output,()))
-    formattedindstring = ' '.join(next(indoutput,()))
+    formattedoutstring = conf.divider.join(next(output, ()))
+    formattedindstring = ' '.join(next(indoutput, ()))
     if formattedindstring:
         formattedoutstring += '  ' + formattedindstring
 
@@ -55,12 +58,11 @@ def exitprogram():
     exit()
 
 
-
 logging.basicConfig(
-        filename="/tmp/dwmstatus.log",
-        level=logging.INFO,
-        datefmt='%s', #Unix time
-        format="%(asctime)s %(levelname)s:%(message)s")
+    filename="/tmp/dwmstatus.log",
+    level=logging.INFO,
+    datefmt='%s',  # Unix time
+    format="%(asctime)s %(levelname)s:%(message)s")
 
 argparser = argparse.ArgumentParser(description='Dwm and Dvtm Status Bar')
 argparser.add_argument('--dvtm', help='Use with dvtm instead of dwm')
@@ -70,7 +72,7 @@ args = argparser.parse_args()
 if os.path.exists(conf.tmpdir):
     try:
         with open(conf.tmpdir + "/pidfile") as file:
-            os.kill(int(file.read()), 0) #test if process exists
+            os.kill(int(file.read()), 0)  # test if process exists
         if args.stop:
             cmd = "exit"
         elif args.dvtm:
@@ -81,10 +83,10 @@ if os.path.exists(conf.tmpdir):
             fifo.write(cmd)
         exit()
 
-    except OSError: # is os.kill fails
+    except OSError:  # is os.kill fails
         shutil.rmtree(conf.tmpdir)
 
-if os.fork() != 0: #Run in background
+if os.fork() != 0:  # Run in background
     exit()
 
 os.mkdir(conf.tmpdir)
