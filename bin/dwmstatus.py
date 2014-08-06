@@ -11,6 +11,11 @@ import argparse
 import shutil
 import logging
 
+#Use with open() to open a fifo in nonblocking mode
+def opener(file, flags):
+    return os.open(file, flags | os.O_NONBLOCK)
+
+
 from importlib.machinery import SourceFileLoader
 conf = SourceFileLoader("conf", os.path.expanduser("~/.dwmstatusrc")).load_module()
 
@@ -50,8 +55,6 @@ with open(conf.tmpdir + "/pidfile", 'w') as file:
     file.write(str(os.getpid()))
 
 os.mkfifo(conf.tmpdir + "/ctl")
-def opener(file, flags):
-    return os.open(file, flags | os.O_NONBLOCK)
 ctlfifo = open(conf.tmpdir + "/ctl", opener=opener)
 dvtmfifos = set()
 dwmsessions = set()
