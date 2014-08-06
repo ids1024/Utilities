@@ -119,7 +119,7 @@ while True:
         setDwmBar(output[1], display)
 
     for fifo in dvtmfifos.copy():
-        setDvtmBar(output[1], fifo)
+        setDvtmBar(output[0], fifo)
 
     if len(dwmsessions) == 0 and len(dvtmfifos) == 0:
         logging.info("No more clients. Exiting.")
