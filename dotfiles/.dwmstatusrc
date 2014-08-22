@@ -26,11 +26,11 @@ def date():
     return formatText(time.strftime('%a %b %d %I:%M %p'))
 
 def ssid():
-    output = subprocess.check_output(('iwconfig','wlan0')).decode().split('\n')[0]
-    if 'off/any' in output:
+    output = subprocess.check_output(('iw','wlan0', 'link')).decode()
+    if 'Not connected.' in output:
         return None
     else:
-        return formatText(output.split('"')[1])
+        return formatText(output.split('\n')[1].split()[1])
 
 def volume():
     mixer = alsaaudio.Mixer("Master")
