@@ -66,8 +66,7 @@ int main(int argc, char *argv[]) {
             fread(buff, size, 1, file);
             fclose(file);
             printf("Replaced %s\n", filename);
-        }
-        else {
+        } else {
             size = archive_entry_size(entry);
             buff = malloc(size);
             archive_read_data(inarc, buff, size);
