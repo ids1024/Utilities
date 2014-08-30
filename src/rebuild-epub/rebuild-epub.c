@@ -7,7 +7,8 @@
 #include <sys/stat.h>
 #include <errno.h>
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     struct archive *inarc;
     struct archive *outarc;
     struct archive_entry *entry;

@@ -6,7 +6,8 @@
 #define BUF_LEN ( sizeof(struct inotify_event) + NAME_MAX + 1 )
 #define WATCHPATH "/home/ian/.PRINT"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     int notify;
     cups_dest_t *dest;
     char *printer;
