@@ -1,6 +1,5 @@
 #!/bin/env python
 
-from subprocess import Popen,call
 import os
 import sys
 import argparse
@@ -42,4 +41,4 @@ while os.path.exists("/tmp/.X{0}-lock".format(display)):
 
 client="/home/ian/Devel/Utilities/bin/ianxenvstart.py"
 
-Popen(("xinit", client, str(envnum),"--", "/bin/X", ':'+str(display)))
+os.execlp("xinit", "xinit", client, str(envnum), "--", "/bin/X", ':'+str(display))
