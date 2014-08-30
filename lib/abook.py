@@ -9,9 +9,7 @@ class AddressBook(object):
     def __init__(self,contacts):
         self.contacts = contacts
         for i in self.contacts:
-            i["email"] = i["email"].split(",")
-            if i["email"] == ['']:
-                i["email"] = []
+            i["email"] = list(filter(None, i["email"].split(",")))
 
     def __getitem__(self, key):
         if isinstance(key,str):
