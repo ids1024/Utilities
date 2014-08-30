@@ -22,12 +22,14 @@ if args.list:
         print(*i)
     try:
         envnum = int(input("Environment: "))
-        if not 0 <= envnum < len(envs):
-            sys.exit("Invalid index.")
     except ValueError:
         sys.exit("Not a number.")
     except KeyboardInterrupt:
         sys.exit("Xstart cancelled by user.")
+    if not (0 <= envnum < len(envs)):
+        sys.exit("Invalid index.")
+
+
 elif args.environment:
     envnum = envs.index(args.environment)
 else:
