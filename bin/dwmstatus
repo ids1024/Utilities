@@ -69,22 +69,23 @@ argparser.add_argument('--dvtm', help='Use with dvtm instead of dwm')
 argparser.add_argument('--stop', action='store_true', help='Stop server')
 args = argparser.parse_args()
 
-if os.path.exists(conf.tmpdir):
-    try:
-        with open(conf.tmpdir + "/pidfile") as file:
-            os.kill(int(file.read()), 0)  # test if process exists
-    except OSError:  # If os.kill fails:
-        shutil.rmtree(conf.tmpdir)
+try:
+    with open(conf.tmpdir + "/pidfile") as file:
+        os.kill(int(file.read()), 0)  # test if process exists
+except FileNotFoundError:
+    pass
+except ProcessLookupError:
+    shutil.rmtree(conf.tmpdir)
+else:
+    if args.stop:
+        cmd = "exit"
+    elif args.dvtm:
+        cmd = "dvtm " + args.dvtm
     else:
-        if args.stop:
-            cmd = "exit"
-        elif args.dvtm:
-            cmd = "dvtm " + args.dvtm
-        else:
-            cmd = "dwm " + os.environ["DISPLAY"]
-        with open(conf.tmpdir + "/ctl", 'w') as fifo:
-            fifo.write(cmd)
-        exit()
+        cmd = "dwm " + os.environ["DISPLAY"]
+    with open(conf.tmpdir + "/ctl", 'w') as fifo:
+        fifo.write(cmd)
+    exit()
 
 
 if os.fork() != 0:  # Run in background
