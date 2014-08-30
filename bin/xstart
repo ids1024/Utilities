@@ -28,12 +28,8 @@ if args.list:
     if not (0 <= envnum < len(envs)):
         sys.exit("Invalid index.")
 
-
-elif args.environment:
-    envnum = envs.index(args.environment)
 else:
-    envnum = envs.index(conf.default_environment)
-
+    envnum = envs.index(args.environment or conf.default_environment)
 
 display = 0
 while os.path.exists("/tmp/.X{0}-lock".format(display)):
