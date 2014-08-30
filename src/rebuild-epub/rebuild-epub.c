@@ -45,16 +45,12 @@ int main(int argc, char *argv[])
     }
 
     while (archive_read_next_header(inarc, &entry) != ARCHIVE_EOF) {
-        char *fullpath;
-        char *path;
-        char *filename;
         void *buff;
         FILE *file;
         int size;
-
-        fullpath = strdup(archive_entry_pathname(entry));
-        filename = basename(fullpath);
-        path = dirname(fullpath);
+        char *fullpath = strdup(archive_entry_pathname(entry));
+        char *filename = basename(fullpath);
+        char *path = dirname(fullpath);
 
         if (strcmp(path, "OEBPS/Text") == 0
             && (file = fopen(filename, "rb")) != NULL) {

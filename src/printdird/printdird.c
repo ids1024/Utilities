@@ -8,11 +8,9 @@
 
 int main(int argc, char *argv[])
 {
-    int notify;
     cups_dest_t *dest;
     char *printer;
-
-    notify = inotify_init();
+    int notify = inotify_init();
     
     if (inotify_add_watch(notify, WATCHPATH, IN_CLOSE_WRITE) == -1)
         return 1;
