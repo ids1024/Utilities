@@ -1,15 +1,18 @@
-import subprocess
+import os
+from configparser import RawConfigParser
 
 
-fields = ('name', 'email', 'phone', 'mobile')
-infile = "/home/ian/.abook/addressbook"
+infile = os.path.expanduser("/home/ian/.abook/addressbook")
 
 
 class AddressBook(object):
     def __init__(self,contacts):
         self.contacts = contacts
         for i in self.contacts:
-            i["email"] = list(filter(None, i["email"].split(",")))
+            if "email" in i:
+                i["email"] = list(filter(None, i["email"].split(",")))
+            else:
+                i["email"] = []
 
     def __getitem__(self, key):
         if isinstance(key,str):
@@ -42,10 +45,7 @@ class AddressBook(object):
         return False
 
 def get_abook():
-    outputformat = '\t'.join('{'+i+'}' for i in fields)
-    command = ('abook', '--convert', '--infile', infile, '--outformat', 'custom' ,'--outformatstr', outputformat)
-    output = subprocess.check_output(command).decode().strip('\n')
-    contacts = [dict(zip(fields,i.split('\t'))) for i in output.split('\n')]
+    parser = RawConfigParser()
+    parser.read(infile)
+    contacts = [dict(parser[i]) for i in parser if i.isdigit()]
     return AddressBook(contacts)
-
-
