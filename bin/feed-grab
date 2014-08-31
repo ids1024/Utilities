@@ -18,16 +18,22 @@ newsbeuterurls = os.path.expanduser("~/.config/newsbeuter/urls")
 class HTMLFeedParser(HTMLParser):
     url, title, type = None, None, None
 
+    def __init__(self, url):
+        HTMLParser.__init__(self)
+        self.pageurl = url
+        html = urllib.request.urlopen(url).read().decode()
+        self.feed(html)
+
     def handle_starttag(self, tag, attrs):
         if tag != "link":
             return
         a = dict(attrs)
-        if 'type' not in a or a['type'] not in feedtype:
+        if a.get('type') not in feedtype:
             return
-        if not self.url or (self.type == 'rss' and a['type'] == 'atom'):
-            self.url = a['href']
+        if not self.url or self.type == 'rss': #Use atom feed if page has both
+            self.url = urllib.parse.urljoin(self.pageurl, a["href"])
             self.title = a.get("title", "No Title")
-            self.type = feedtype[a['type']]
+            self.type = feedtype[a["type"]]
 
 
 if len(sys.argv) >= 2:
@@ -35,27 +41,23 @@ if len(sys.argv) >= 2:
 else:
     url = check_output(("xclip","-o")).decode()
 
-html = urllib.request.urlopen(url).read().decode()
-
-feed = HTMLFeedParser()
-feed.feed(html)
+feed = HTMLFeedParser(url)
 
 if feed.url == None:
     print("No feed found.")
     sys.exit()
 
-feedurl = urllib.parse.urljoin(url, feed.url)
 
-print("Found {feed.type} feed:\n{feed.title}\n{0}\n".format(feedurl, feed=feed))
+print("Found {feed.type} feed:\n{feed.title}\n{feed.url}\n".format(feed=feed))
 
 with open(newsbeuterurls, "r") as feedconf:
-    if feedurl in feedconf.read():
+    if feed.url in feedconf.read():
         sys.exit("Already in Newsbeuter.")
 
 addfeed = input("Add to Newsbeuter? [y/N] ")
 if addfeed in ('y','yes'):
     with open(newsbeuterurls, "a") as feedconf:
-        feedconf.write(feedurl+'\n')
+        feedconf.write(feed.url+'\n')
     print("Change made successfully.")
 
 else:
