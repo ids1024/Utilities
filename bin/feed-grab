@@ -49,9 +49,8 @@ feedurl = urllib.parse.urljoin(url, feed.url)
 print("Found {feed.type} feed:\n{feed.title}\n{0}\n".format(feedurl, feed=feed))
 
 with open(newsbeuterurls, "r") as feedconf:
-    for line in feedconf:
-        if feedurl in line:
-            sys.exit("Already in Newsbeuter.")
+    if feedurl in feedconf.read():
+        sys.exit("Already in Newsbeuter.")
 
 addfeed = input("Add to Newsbeuter? [y/N] ")
 if addfeed in ('y','yes'):
