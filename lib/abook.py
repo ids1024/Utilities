@@ -2,7 +2,7 @@ import os
 from configparser import RawConfigParser
 
 
-infile = os.path.expanduser("/home/ian/.abook/addressbook")
+infile = os.path.expanduser("~/.abook/addressbook")
 
 
 class AddressBook(object):
