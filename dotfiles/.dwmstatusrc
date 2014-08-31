@@ -6,20 +6,22 @@ import time
 import alsaaudio
 from email.utils import parseaddr
 from email.parser import BytesHeaderParser
+from xml.etree import ElementTree
 import abook
 import psutil
 
 tmpdir = "/tmp/dwmstatus"
 
 def formatText(text, bg=None, fg=None, bold=False):
-    formatted = "<span"
+    span = ElementTree.Element("span")
+    span.text = text
     if bg:
-        formatted += ' background="' + bg + '"'
+        span.set("background", bg)
     if fg:
-        formatted += ' foreground="' + fg + '"'
+        span.set("foreground", fg)
     if bold:
-        formatted += ' weight="bold"'
-    formatted += ">" + text + "</span>"
+        span.set("weight", "bold")
+    formatted = ElementTree.tostring(span, encoding="unicode")
     return (text, formatted)
 
 def date():
