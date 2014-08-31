@@ -11,6 +11,7 @@ import abook
 import psutil
 
 tmpdir = "/tmp/dwmstatus"
+inbox = os.path.expanduser("~/.mail/perebruin/INBOX")
 
 def formatText(text, bg=None, fg=None, bold=False):
     span = ElementTree.Element("span")
@@ -67,20 +68,18 @@ def ram():
     return formatText(str(percent) + "% RAM", fg=color)
 
 def mail():
-    inbox = "/home/ian/.mail/perebruin/INBOX"
     addressbook = abook.get_abook()
     parser = BytesHeaderParser()
-    os.chdir(inbox+"/new")
-    unread = False
-    for i in os.listdir():
+    os.chdir(inbox + "/new")
+    emails = os.listdir()
+    if not emails:
+        return None
+    for i in emails:
         with open(i, 'rb') as file:
-            email = parser.parse(file)
-        if parseaddr(email.get('from'))[1] in addressbook:
+            addr = parser.parse(file).get('from')
+        if parseaddr(addr)[1] in addressbook:
             return formatText('✉',fg="red")
-        unread = True
-    if unread:
-        return formatText('✉')
-    return None
+    return formatText('✉')
 
 items = (volume, cpu, ram, ssid, date)
 indicators = (mail,)
