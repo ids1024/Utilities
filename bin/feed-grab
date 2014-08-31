@@ -26,10 +26,7 @@ class HTMLFeedParser(HTMLParser):
             return
         if not self.url or (self.type == 'rss' and a['type'] == 'atom'):
             self.url = a['href']
-            if 'title' in a:
-                self.title = a['title']
-            else:
-                self.title = 'No Title'
+            self.title = a.get("title", "No Title")
             self.type = feedtype[a['type']]
 
 
