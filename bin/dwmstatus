@@ -40,11 +40,9 @@ def genOutput():
     output = zip(*filter(None, (i() for i in conf.items)))
     indoutput = zip(*filter(None, (i() for i in conf.indicators)))
 
-    outstrings = (conf.divider.join(items) +
+    return tuple(conf.divider.join(items) +
             ('  ' + ' '.join(indicators) if indicators else '')
             for items, indicators in zip_longest(output, indoutput))
-
-    return tuple(outstrings)
 
 
 def exitprogram():
@@ -112,15 +110,15 @@ while True:
             logging.info("Exiting.")
             exitprogram()
 
-    output = genOutput()
+    unformatted, formatted = genOutput()
 
     for display in dwmsessions.copy():
-        setDwmBar(output[1], display)
+        setDwmBar(formatted, display)
 
     for fifo in dvtmfifos.copy():
-        setDvtmBar(output[0], fifo)
+        setDvtmBar(unformatted, fifo)
 
-    if len(dwmsessions) == 0 and len(dvtmfifos) == 0:
+    if not (dwmsessions or dvtmfifos):
         logging.info("No more clients. Exiting.")
         exitprogram()
 
