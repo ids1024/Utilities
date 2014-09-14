@@ -47,10 +47,30 @@ def genOutput():
             for items, indicators in zip_longest(output, indoutput))
 
 
-def exitprogram():
-    shutil.rmtree(conf.tmpdir)
-    ctlfifo.close()
-    exit()
+def mainLoop():
+    for line in ctlfifo.read().splitlines():
+        words = line.split()
+        if words[0] == "dwm":
+            dwmsessions.add(words[1])
+        elif words[0] == "dvtm":
+            dvtmfifos.add(words[1])
+        elif words[0] == "exit":
+            logging.info("Exiting.")
+            return
+
+    unformatted, formatted = genOutput()
+
+    for display in dwmsessions.copy():
+        setDwmBar(formatted, display)
+
+    for fifo in dvtmfifos.copy():
+        setDvtmBar(unformatted, fifo)
+
+    if not (dwmsessions or dvtmfifos):
+        logging.info("No more clients. Exiting.")
+        return
+
+    time.sleep(1)
 
 
 logging.basicConfig(
@@ -100,28 +120,6 @@ if args.dvtm:
 else:
     dwmsessions.add(os.environ["DISPLAY"])
 
-
-while True:
-    for line in ctlfifo.read().splitlines():
-        words = line.split()
-        if words[0] == "dwm":
-            dwmsessions.add(words[1])
-        elif words[0] == "dvtm":
-            dvtmfifos.add(words[1])
-        elif words[0] == "exit":
-            logging.info("Exiting.")
-            exitprogram()
-
-    unformatted, formatted = genOutput()
-
-    for display in dwmsessions.copy():
-        setDwmBar(formatted, display)
-
-    for fifo in dvtmfifos.copy():
-        setDvtmBar(unformatted, fifo)
-
-    if not (dwmsessions or dvtmfifos):
-        logging.info("No more clients. Exiting.")
-        exitprogram()
-
-    time.sleep(1)
+mainLoop()
+shutil.rmtree(conf.tmpdir)
+ctlfifo.close()
