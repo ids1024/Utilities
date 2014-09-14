@@ -5,11 +5,12 @@
 
 
 import os
-from subprocess import call
 import time
 import argparse
 import shutil
 import logging
+from subprocess import call
+from itertools import zip_longest
 
 from importlib.machinery import SourceFileLoader
 conf = SourceFileLoader(
@@ -39,17 +40,11 @@ def genOutput():
     output = zip(*filter(None, (i() for i in conf.items)))
     indoutput = zip(*filter(None, (i() for i in conf.indicators)))
 
-    outstring = conf.divider.join(next(output, ()))
-    indstring = ' '.join(next(indoutput, ()))
-    if indstring:
-        outstring += '  ' + indstring
+    outstrings = (conf.divider.join(items) +
+            ('  ' + ' '.join(indicators) if indicators else '')
+            for items, indicators in zip_longest(output, indoutput))
 
-    formattedoutstring = conf.divider.join(next(output, ()))
-    formattedindstring = ' '.join(next(indoutput, ()))
-    if formattedindstring:
-        formattedoutstring += '  ' + formattedindstring
-
-    return (outstring, formattedoutstring)
+    return tuple(outstrings)
 
 
 def exitprogram():
