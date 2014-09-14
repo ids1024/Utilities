@@ -103,11 +103,8 @@ else:
     else:
         sys.exit()
 
-
-if args.stop: # Server not running but told to stop it
-    sys.exit()
-
-if os.fork() != 0:  # Run in background
+# Exit if args.stop, otherwise run in background
+if args.stop or os.fork() != 0:
     sys.exit()
 
 os.mkdir(conf.tmpdir)
