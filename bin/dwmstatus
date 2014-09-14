@@ -40,15 +40,6 @@ def setDwmBar(text):
             dwmsessions.discard(display)
 
 
-def genOutput():
-    output = zip(*filter(None, (i() for i in conf.items)))
-    indoutput = zip(*filter(None, (i() for i in conf.indicators)))
-
-    return tuple(conf.divider.join(items) +
-            ('  ' + ' '.join(indicators) if indicators else '')
-            for items, indicators in zip_longest(output, indoutput))
-
-
 def mainLoop():
     for line in ctlfifo.read().splitlines():
         words = line.split()
@@ -60,7 +51,13 @@ def mainLoop():
             logging.info("Exiting.")
             return
 
-    unformatted, formatted = genOutput()
+    output = zip(*filter(None, (i() for i in conf.items)))
+    indoutput = zip(*filter(None, (i() for i in conf.indicators)))
+
+    unformatted, formatted = (conf.divider.join(items) +
+            ('  ' + ' '.join(indicators) if indicators else '')
+            for items, indicators in zip_longest(output, indoutput))
+
     setDwmBar(formatted)
     setDvtmBar(unformatte)
 
