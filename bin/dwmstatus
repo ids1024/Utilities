@@ -15,6 +15,8 @@ from itertools import zip_longest
 from importlib.machinery import SourceFileLoader
 conf = SourceFileLoader(
     "conf", os.path.expanduser("~/.dwmstatusrc")).load_module()
+pidfile = conf.tmpdir + "/pidfile"
+ctlpath = conf.tmpdir + "/ctl"
 
 
 # Use with open() to open a fifo in nonblocking mode
@@ -63,7 +65,7 @@ argparser.add_argument('--stop', action='store_true', help='Stop server')
 args = argparser.parse_args()
 
 try:
-    with open(conf.tmpdir + "/pidfile") as file:
+    with open(pidfile) as file:
         os.kill(int(file.read()), 0)  # test if process exists
 except FileNotFoundError:
     pass
@@ -76,7 +78,7 @@ else:
         cmd = "dvtm " + args.dvtm
     else:
         cmd = "dwm " + os.environ["DISPLAY"]
-    with open(conf.tmpdir + "/ctl", 'w') as fifo:
+    with open(ctlpath, 'w') as fifo:
         fifo.write(cmd)
     exit()
 
@@ -85,11 +87,11 @@ if os.fork() != 0:  # Run in background
     exit()
 
 os.mkdir(conf.tmpdir)
-with open(conf.tmpdir + "/pidfile", 'w') as file:
+with open(pidfile, 'w') as file:
     file.write(str(os.getpid()))
 
-os.mkfifo(conf.tmpdir + "/ctl")
-ctlfifo = open(conf.tmpdir + "/ctl", opener=opener)
+os.mkfifo(ctlpath)
+ctlfifo = open(ctlpath, opener=opener)
 dvtmfifos = set()
 dwmsessions = set()
 
