@@ -79,6 +79,7 @@ logging.basicConfig(
 argparser = argparse.ArgumentParser(description='Dwm and Dvtm Status Bar')
 argparser.add_argument('--dvtm', help='Use with dvtm instead of dwm')
 argparser.add_argument('--stop', action='store_true', help='Stop server')
+argparser.add_argument('--restart', action='store_true', help='Restart server')
 args = argparser.parse_args()
 
 try:
@@ -89,7 +90,7 @@ except FileNotFoundError:
 except ProcessLookupError:
     shutil.rmtree(conf.tmpdir)
 else:
-    if args.stop:
+    if args.stop or args.restart:
         cmd = "exit"
     elif args.dvtm:
         cmd = "dvtm " + args.dvtm
@@ -97,7 +98,10 @@ else:
         cmd = "dwm " + os.environ["DISPLAY"]
     with open(ctlpath, 'w') as fifo:
         fifo.write(cmd)
-    sys.exit()
+    if args.restart:
+        time.sleep(1)
+    else:
+        sys.exit()
 
 
 if args.stop: # Server not running but told to stop it
