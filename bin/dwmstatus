@@ -25,17 +25,19 @@ def opener(file, flags):
 
 
 def setDvtmBar(text, fifopath):
-    try:
-        with open(fifopath, 'w', opener=opener) as fifo:
-            fifo.write(text + '\n')
-    except OSError:  # Not open for reading
-        logging.info("Discarding " + fifopath)
-        dvtmfifos.discard(fifopath)
+    for fifopath in dvtmfifos.copy():
+        try:
+            with open(fifopath, 'w', opener=opener) as fifo:
+                fifo.write(text + '\n')
+        except OSError:  # Not open for reading
+            logging.info("Discarding " + fifopath)
+            dvtmfifos.discard(fifopath)
 
 
-def setDwmBar(text, display):
-    if call(("xsetroot", "-name", text), env={"DISPLAY": display}) != 0:
-        dwmsessions.discard(display)
+def setDwmBar(text):
+    for display in dwmsessions.copy():
+        if call(("xsetroot", "-name", text), env={"DISPLAY": display}) != 0:
+            dwmsessions.discard(display)
 
 
 def genOutput():
@@ -59,12 +61,8 @@ def mainLoop():
             return
 
     unformatted, formatted = genOutput()
-
-    for display in dwmsessions.copy():
-        setDwmBar(formatted, display)
-
-    for fifo in dvtmfifos.copy():
-        setDvtmBar(unformatted, fifo)
+    setDwmBar(formatted)
+    setDvtmBar(unformatte)
 
     if not (dwmsessions or dvtmfifos):
         logging.info("No more clients. Exiting.")
