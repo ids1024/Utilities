@@ -5,6 +5,7 @@
 
 
 import os
+import sys
 import time
 import argparse
 import shutil
@@ -24,7 +25,7 @@ def opener(file, flags):
     return os.open(file, flags | os.O_NONBLOCK)
 
 
-def setDvtmBar(text, fifopath):
+def setDvtmBar(text):
     for fifopath in dvtmfifos.copy():
         try:
             with open(fifopath, 'w', opener=opener) as fifo:
@@ -41,31 +42,32 @@ def setDwmBar(text):
 
 
 def mainLoop():
-    for line in ctlfifo.read().splitlines():
-        words = line.split()
-        if words[0] == "dwm":
-            dwmsessions.add(words[1])
-        elif words[0] == "dvtm":
-            dvtmfifos.add(words[1])
-        elif words[0] == "exit":
-            logging.info("Exiting.")
-            return
+    while True:
+        for line in ctlfifo.read().splitlines():
+            words = line.split()
+            if words[0] == "dwm":
+                dwmsessions.add(words[1])
+            elif words[0] == "dvtm":
+                dvtmfifos.add(words[1])
+            elif words[0] == "exit":
+                logging.info("Exiting.")
+                return
 
-    output = zip(*filter(None, (i() for i in conf.items)))
-    indoutput = zip(*filter(None, (i() for i in conf.indicators)))
+        output = zip(*filter(None, (i() for i in conf.items)))
+        indoutput = zip(*filter(None, (i() for i in conf.indicators)))
 
-    unformatted, formatted = (conf.divider.join(items) +
+        unformatted, formatted = (conf.divider.join(items) +
             ('  ' + ' '.join(indicators) if indicators else '')
             for items, indicators in zip_longest(output, indoutput))
 
-    setDwmBar(formatted)
-    setDvtmBar(unformatte)
+        setDwmBar(formatted)
+        setDvtmBar(unformatted)
 
-    if not (dwmsessions or dvtmfifos):
-        logging.info("No more clients. Exiting.")
-        return
+        if not (dwmsessions or dvtmfifos):
+            logging.info("No more clients. Exiting.")
+            return
 
-    time.sleep(1)
+        time.sleep(1)
 
 
 logging.basicConfig(
@@ -95,11 +97,14 @@ else:
         cmd = "dwm " + os.environ["DISPLAY"]
     with open(ctlpath, 'w') as fifo:
         fifo.write(cmd)
-    exit()
+    sys.exit()
 
+
+if args.stop: # Server not running but told to stop it
+    sys.exit()
 
 if os.fork() != 0:  # Run in background
-    exit()
+    sys.exit()
 
 os.mkdir(conf.tmpdir)
 with open(pidfile, 'w') as file:
