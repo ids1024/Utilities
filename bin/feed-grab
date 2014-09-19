@@ -19,7 +19,7 @@ class HTMLFeedParser(HTMLParser):
     url, title, type = None, None, None
 
     def __init__(self, url):
-        HTMLParser.__init__(self)
+        super().__init__(self)
         self.pageurl = url
         html = urllib.request.urlopen(url).read().decode()
         self.feed(html)
