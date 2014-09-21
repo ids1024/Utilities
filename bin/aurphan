@@ -4,8 +4,8 @@ import AUR
 from pycman import config
 
 handle = config.init_with_config("/etc/pacman.conf")
-syncpkgs = set(pkg.name for db in handle.get_syncdbs() for pkg in db.pkgcache)
-localpkgs = set(pkg.name for pkg in handle.get_localdb().pkgcache)
+syncpkgs = {pkg.name for db in handle.get_syncdbs() for pkg in db.pkgcache}
+localpkgs = {pkg.name for pkg in handle.get_localdb().pkgcache}
 foreignpkgs = localpkgs.difference(syncpkgs)
 
 aur = AUR.RPC.AUR()
