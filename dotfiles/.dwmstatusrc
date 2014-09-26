@@ -12,6 +12,19 @@ import psutil
 tmpdir = "/tmp/dwmstatus"
 inbox = os.path.expanduser("~/.mail/perebruin/INBOX")
 
+def colorPercent(percent, name):
+    percent = round(percent)
+    if percent < 20:
+        color = None
+    elif percent < 50:
+        color = "yellow"
+    elif percent < 80:
+        color = "orange"
+    else:
+        color = "red"
+    return (str(percent) + '% ' + name, color)
+
+
 def date():
     return time.strftime('%a %b %d %I:%M %p')
 
@@ -31,28 +44,10 @@ def volume():
         return str(vol) + "% Volume"
 
 def cpu():
-    percent = (round(psutil.cpu_percent()))
-    if percent < 20:
-        color = None
-    elif percent < 50:
-        color = "yellow"
-    elif percent < 80:
-        color = "orange"
-    else:
-        color = "red"
-    return (str(percent) + "% CPU", color)
+    return colorPercent(psutil.cpu_percent(), 'CPU')
 
 def ram():
-    percent = round(psutil.virtual_memory().percent)
-    if percent < 20:
-        color = None
-    elif percent < 50:
-        color = "yellow"
-    elif percent < 80:
-        color = "orange"
-    else:
-        color = "red"
-    return (str(percent) + "% RAM", color)
+    return colorPercent(psutil.virtual_memory().percent, 'RAM')
 
 def mail():
     addressbook = abook.get_abook()
