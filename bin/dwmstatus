@@ -25,20 +25,22 @@ def opener(file, flags):
     return os.open(file, flags | os.O_NONBLOCK)
 
 
-def formatText(fields):
+def formatText(functions):
     # Implement background / bold etc. later if needed
     # Use bitfield for bold / italic etc.
-    if not fields:
-        return None
-    if isinstance(fields, str):
-        text, fg = fields, None
-    else:
-        text, fg = fields
-    if fg:
-        formatted = '<span foreground="{}">{}</span>'.format(fg, text)
-    else:
-        formatted = text
-    return (text, formatted)
+    for func in functions:
+        fields = func()
+        if not fields:
+            continue
+        if isinstance(fields, str):
+            text, fg = fields, None
+        else:
+            text, fg = fields
+        if fg:
+            formatted = '<span foreground="{}">{}</span>'.format(fg, text)
+        else:
+            formatted = text
+        yield (text, formatted)
 
 
 def setDvtmBar(text):
@@ -69,8 +71,8 @@ def mainLoop():
                 logging.info("Exiting.")
                 return
 
-        output = zip(*filter(None, (formatText(i()) for i in conf.items)))
-        indoutput = zip(*filter(None, (formatText(i()) for i in conf.indicators)))
+        output = zip(*formatText(conf.items))
+        indoutput = zip(*formatText(conf.indicators))
 
         unformatted, formatted = (conf.divider.join(items) +
             ('  ' + ' '.join(indicators) if indicators else '')
