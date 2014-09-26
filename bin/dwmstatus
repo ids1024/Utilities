@@ -12,6 +12,7 @@ import shutil
 import logging
 from subprocess import call
 from itertools import zip_longest
+from xml.etree import ElementTree
 
 from importlib.machinery import SourceFileLoader
 conf = SourceFileLoader(
@@ -23,6 +24,24 @@ ctlpath = conf.tmpdir + "/ctl"
 # Use with open() to open a fifo in nonblocking mode
 def opener(file, flags):
     return os.open(file, flags | os.O_NONBLOCK)
+
+
+def formatText(fields):
+    # Implement background / bold etc. later if needed
+    # Use bitfield for bold / italic etc.
+    if not fields:
+        return None
+    if isinstance(fields, str):
+        text = fields
+        fg = None
+    else:
+        text, fg = fields
+    span = ElementTree.Element("span")
+    span.text = text
+    if fg:
+        span.set("foreground", fg)
+    formatted = ElementTree.tostring(span, encoding="unicode")
+    return (text, formatted)
 
 
 def setDvtmBar(text):
@@ -53,8 +72,8 @@ def mainLoop():
                 logging.info("Exiting.")
                 return
 
-        output = zip(*filter(None, (i() for i in conf.items)))
-        indoutput = zip(*filter(None, (i() for i in conf.indicators)))
+        output = zip(*filter(None, (formatText(i()) for i in conf.items)))
+        indoutput = zip(*filter(None, (formatText(i()) for i in conf.indicators)))
 
         unformatted, formatted = (conf.divider.join(items) +
             ('  ' + ' '.join(indicators) if indicators else '')

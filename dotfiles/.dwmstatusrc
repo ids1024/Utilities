@@ -6,42 +6,29 @@ import time
 import alsaaudio
 from email.utils import parseaddr
 from email.parser import BytesHeaderParser
-from xml.etree import ElementTree
 import abook
 import psutil
 
 tmpdir = "/tmp/dwmstatus"
 inbox = os.path.expanduser("~/.mail/perebruin/INBOX")
 
-def formatText(text, bg=None, fg=None, bold=False):
-    span = ElementTree.Element("span")
-    span.text = text
-    if bg:
-        span.set("background", bg)
-    if fg:
-        span.set("foreground", fg)
-    if bold:
-        span.set("weight", "bold")
-    formatted = ElementTree.tostring(span, encoding="unicode")
-    return (text, formatted)
-
 def date():
-    return formatText(time.strftime('%a %b %d %I:%M %p'))
+    return time.strftime('%a %b %d %I:%M %p')
 
 def ssid():
     output = subprocess.check_output(('iw','wlan0', 'link')).decode()
     if 'Not connected.' in output:
         return None
     else:
-        return formatText(output.split('\n')[1].split()[1])
+        return output.split('\n')[1].split()[1]
 
 def volume():
     mixer = alsaaudio.Mixer("Master")
     vol = mixer.getvolume()[0]
     if mixer.getmute()[0]:
-        return formatText(str(vol) + "% Muted", fg="grey")
+        return str(vol) + "% Muted", "grey"
     else:
-        return formatText(str(vol) + "% Volume")
+        return str(vol) + "% Volume"
 
 def cpu():
     percent = (round(psutil.cpu_percent()))
@@ -53,7 +40,7 @@ def cpu():
         color = "orange"
     else:
         color = "red"
-    return formatText(str(percent) + "% CPU", fg=color)
+    return (str(percent) + "% CPU", color)
 
 def ram():
     percent = round(psutil.virtual_memory().percent)
@@ -65,7 +52,7 @@ def ram():
         color = "orange"
     else:
         color = "red"
-    return formatText(str(percent) + "% RAM", fg=color)
+    return (str(percent) + "% RAM", color)
 
 def mail():
     addressbook = abook.get_abook()
@@ -78,8 +65,8 @@ def mail():
         with open(i, 'rb') as file:
             addr = parser.parse(file).get('from')
         if parseaddr(addr)[1] in addressbook:
-            return formatText('✉',fg="red")
-    return formatText('✉')
+            return ('✉', "red")
+    return '✉'
 
 items = (volume, cpu, ram, ssid, date)
 indicators = (mail,)
