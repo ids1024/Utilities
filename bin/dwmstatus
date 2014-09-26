@@ -12,7 +12,6 @@ import shutil
 import logging
 from subprocess import call
 from itertools import zip_longest
-from xml.etree import ElementTree
 
 from importlib.machinery import SourceFileLoader
 conf = SourceFileLoader(
@@ -32,15 +31,13 @@ def formatText(fields):
     if not fields:
         return None
     if isinstance(fields, str):
-        text = fields
-        fg = None
+        text, fg = fields, None
     else:
         text, fg = fields
-    span = ElementTree.Element("span")
-    span.text = text
     if fg:
-        span.set("foreground", fg)
-    formatted = ElementTree.tostring(span, encoding="unicode")
+        formatted = '<span foreground="{}">{}</span>'.format(fg, text)
+    else:
+        formatted = text
     return (text, formatted)
 
 
