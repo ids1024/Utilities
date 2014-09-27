@@ -24,7 +24,6 @@ ctlpath = conf.tmpdir + "/ctl"
 def opener(file, flags):
     return os.open(file, flags | os.O_NONBLOCK)
 
-
 def formatText(functions):
     # Implement background / bold etc. later if needed
     # Use bitfield for bold / italic etc.
@@ -71,12 +70,11 @@ def mainLoop():
                 logging.info("Exiting.")
                 return
 
-        output = zip(*formatText(conf.items))
-        indoutput = zip(*formatText(conf.indicators))
-
-        unformatted, formatted = (conf.divider.join(items) +
-            ('  ' + ' '.join(indicators) if indicators else '')
-            for items, indicators in zip_longest(output, indoutput))
+        unformatted, formatted = (conf.divider.join(i) + '  ' + ' '.join(j)
+            for i, j in zip_longest(
+                zip(*formatText(conf.items)),
+                zip(*formatText(conf.indicators)),
+                fillvalue = ()))
 
         setDwmBar(formatted)
         setDvtmBar(unformatted)
