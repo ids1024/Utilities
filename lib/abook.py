@@ -4,20 +4,20 @@ from configparser import RawConfigParser
 infile = os.path.expanduser("~/.abook/addressbook")
 
 class AddressBook(object):
-    def __init__(self,contacts):
+    def __init__(self, contacts):
         self.contacts = contacts
         for i in self.contacts:
             i["email"] = list(filter(None, i.get("email", '').split(",")))
 
     def __getitem__(self, key):
-        if isinstance(key,str):
+        if isinstance(key, str):
             names = [i['name'] for i in self.contacts]
             if key in names:
                 return self.contacts[names.index(key)]
-            for x,name in enumerate(names):
+            for x, name in enumerate(names):
                 if key.lower() in name.lower():
                     return self.contacts[x]
-        elif isinstance(key,int):
+        elif isinstance(key, int):
             return self.contacts[key]
         raise KeyError
 
