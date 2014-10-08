@@ -35,10 +35,11 @@ def formatText(functions):
             text, fg = fields, None
         else:
             text, fg = fields
-        if fg:
-            formatted = '<span foreground="{}">{}</span>'.format(fg, text)
-        else:
-            formatted = text
+#        if fg:
+#            formatted = '<span foreground="{}">{}</span>'.format(fg, text)
+#        else:
+#            formatted = text
+        formatted = text
         yield (text, formatted)
 
 

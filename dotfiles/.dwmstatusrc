@@ -65,4 +65,4 @@ def mail():
 
 items = (volume, cpu, ram, ssid, date)
 indicators = (mail,)
-divider = ' ❧ '
+divider = ' | '
