@@ -60,8 +60,8 @@ def mail():
         with open(i, 'rb') as file:
             addr = parser.parse(file).get('from')
         if parseaddr(addr)[1] in addressbook:
-            return ('✉', "red")
-    return '✉'
+            return ('M', "red")
+    return 'M'
 
 items = (volume, cpu, ram, ssid, date)
 indicators = (mail,)
