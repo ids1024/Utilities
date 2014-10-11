@@ -1,5 +1,5 @@
 import os
-from configparser import RawConfigParser
+from configparser import ConfigParser
 
 infile = os.path.expanduser("~/.abook/addressbook")
 
@@ -40,7 +40,7 @@ class AddressBook(object):
         return False
 
 def get_abook():
-    parser = RawConfigParser()
+    parser = ConfigParser()
     parser.read(infile)
     contacts = [dict(parser[i]) for i in parser if i.isdigit()]
     return AddressBook(contacts)
