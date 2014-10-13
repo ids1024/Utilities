@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 
-from html.parser import HTMLParser
+from lxml import html
 from subprocess import check_output
-import urllib.request
-import  urllib.parse
+from urllib.parse import urljoin
 import sys
 import os
-
 
 feedtype = {
         'application/atom+xml':'atom',
@@ -14,50 +12,36 @@ feedtype = {
         }
 newsbeuterurls = os.path.expanduser("~/.config/newsbeuter/urls")
 
-
-class HTMLFeedParser(HTMLParser):
-    url, title, type = None, None, None
-
-    def __init__(self, url):
-        super().__init__(self)
-        self.pageurl = url
-        html = urllib.request.urlopen(url).read().decode()
-        self.feed(html)
-
-    def handle_starttag(self, tag, attrs):
-        if tag != "link":
-            return
-        a = dict(attrs)
-        if a.get('type') not in feedtype:
-            return
-        if not self.url or self.type == 'rss': #Use atom feed if page has both
-            self.url = urllib.parse.urljoin(self.pageurl, a["href"])
-            self.title = a.get("title", "No Title")
-            self.type = feedtype[a["type"]]
-
-
 if len(sys.argv) >= 2:
     url = sys.argv[1]
 else:
     url = check_output(("xclip","-o")).decode()
 
-feed = HTMLFeedParser(url)
+feed = None
+for i in html.parse(url).find('head').findall('link'):
+    ftype = feedtype.get(i.get('type'))
+    if not ftype:
+        continue
+    if not feed or feed['type'] == 'rss': #Prefer atom feed
+        feed = {'type': ftype,
+                'title': i.get('title', 'No Title'),
+                'url': urljoin(url, i.get(i.get('href')))
+               }
 
-if feed.url == None:
+if not feed:
     print("No feed found.")
     sys.exit()
 
-
-print("Found {feed.type} feed:\n{feed.title}\n{feed.url}\n".format(feed=feed))
+print("Found {type} feed:\n{title}\n{url}\n".format_map(feed))
 
 with open(newsbeuterurls, "r") as feedconf:
-    if feed.url in feedconf.read():
+    if feed['url'] in feedconf.read():
         sys.exit("Already in Newsbeuter.")
 
 addfeed = input("Add to Newsbeuter? [y/N] ")
 if addfeed in ('y','yes'):
     with open(newsbeuterurls, "a") as feedconf:
-        feedconf.write(feed.url+'\n')
+        feedconf.write(feed['url']+'\n')
     print("Change made successfully.")
 
 else:
