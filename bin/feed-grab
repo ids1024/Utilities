@@ -20,9 +20,7 @@ else:
 feed = None
 for i in html.parse(url).find('head').findall('link'):
     ftype = feedtype.get(i.get('type'))
-    if not ftype:
-        continue
-    if not feed or feed['type'] == 'rss': #Prefer atom feed
+    if ftype and (not feed or feed['type'] == 'rss'): #Prefer atom feed
         feed = {'type': ftype,
                 'title': i.get('title', 'No Title'),
                 'url': urljoin(url, i.get(i.get('href')))
