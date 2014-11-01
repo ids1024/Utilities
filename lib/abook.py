@@ -24,12 +24,6 @@ class AddressBook(object):
     def __len__(self):
         return len(self.contacts)
 
-    def __str__(self):
-        return str(self.contacts)
-    
-    def __unicode__(self):
-        return str(self.contacts)
-
     def __repr__(self):
         return str(self.contacts)
 
