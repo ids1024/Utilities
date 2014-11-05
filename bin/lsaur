@@ -1,7 +1,7 @@
 #!/bin/bash
 if [[ "$1" == "-u" ]] #Update, should be done in a cron job
 then
-	curl https://aur.archlinux.org/packages.gz | zcat | awk 'NR>1{print $1}' | sponge ~/.lsaur
+	curl https://aur.archlinux.org/packages.gz | zcat | awk 'NR>1' | sponge ~/.lsaur
 else
 	cat ~/.lsaur
 fi
