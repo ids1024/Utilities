@@ -36,5 +36,5 @@ while os.path.exists("/tmp/.X{0}-lock".format(display)):
     display += 1
 
 client="/home/ian/Devel/Utilities/bin/ianxenvstart.py"
-
-os.execlp("xinit", "xinit", client, str(envnum), "--", "/bin/X", ':'+str(display))
+vt = os.environ.get('XDG_VTNR')
+os.execlp("xinit", "xinit", client, str(envnum), "--", "/bin/X", ':'+str(display), "vt"+vt)
