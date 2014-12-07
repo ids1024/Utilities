@@ -36,12 +36,15 @@ def ssid():
         return output.split('\n')[1].split()[1]
 
 def volume():
-    mixer = alsaaudio.Mixer("Master")
-    vol = mixer.getvolume()[0]
-    if mixer.getmute()[0]:
-        return str(vol) + "% Muted", "grey"
-    else:
-        return str(vol) + "% Volume"
+    try:
+        mixer = alsaaudio.Mixer("Master")
+        vol = mixer.getvolume()[0]
+        if mixer.getmute()[0]:
+            return str(vol) + "% Muted", "grey"
+        else:
+            return str(vol) + "% Volume"
+    except alsaaudio.ALSAAudioError:
+        return "? Volume"
 
 def cpu():
     return colorPercent(psutil.cpu_percent(), 'CPU')
