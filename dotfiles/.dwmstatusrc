@@ -29,7 +29,10 @@ def date():
     return time.strftime('%a %b %d %I:%M %p')
 
 def ssid():
-    output = subprocess.check_output(('iw','wlp2s0', 'link')).decode()
+    try:
+        output = subprocess.check_output(('iw','wlp2s0', 'link')).decode()
+    except subprocess.CalledProcessError:
+        return None
     if 'Not connected.' in output:
         return None
     else:
