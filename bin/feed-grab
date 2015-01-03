@@ -3,6 +3,7 @@
 from lxml import html
 from subprocess import check_output
 from urllib.parse import urljoin
+from urllib.request import urlopen
 import sys
 import os
 
@@ -18,7 +19,7 @@ else:
     url = check_output(("xclip","-o")).decode()
 
 feed = None
-for i in html.parse(url).find('head').findall('link'):
+for i in html.parse(urlopen(url)).find('head').findall('link'):
     ftype = feedtype.get(i.get('type'))
     if ftype and (not feed or feed['type'] == 'rss'): #Prefer atom feed
         feed = {'type': ftype,
