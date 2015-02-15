@@ -69,6 +69,14 @@ def mail():
             return ('M', "red")
     return 'M'
 
-items = (volume, cpu, ram, ssid, date)
+def music():
+    cmd = ["playerctl", "metadata", "xesam:title"]
+    try:
+        output = subprocess.check_output(cmd).decode()
+    except subprocess.CalledProcessError:
+        return
+    return output
+
+items = (music, volume, cpu, ram, ssid, date)
 indicators = (mail,)
 divider = ' | '
