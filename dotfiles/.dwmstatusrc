@@ -32,9 +32,9 @@ def ssid():
     try:
         output = subprocess.check_output(('iw','wlp2s0', 'link')).decode()
     except subprocess.CalledProcessError:
-        return None
+        return
     if 'Not connected.' in output:
-        return None
+        return
     else:
         return output.split('\n')[1].split()[1]
 
@@ -61,7 +61,7 @@ def mail():
     os.chdir(inbox + "/new")
     emails = os.listdir()
     if not emails:
-        return None
+        return
     for i in emails:
         with open(i, 'rb') as file:
             addr = parser.parse(file).get('from')
