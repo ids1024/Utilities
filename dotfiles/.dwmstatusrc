@@ -66,8 +66,8 @@ def mail():
         with open(i, 'rb') as file:
             addr = parser.parse(file).get('from')
         if parseaddr(addr)[1] in addressbook:
-            return ('M', "red")
-    return 'M'
+            return ('✉', "red")
+    return '✉'
 
 def music():
     cmd = ["playerctl", "metadata", "xesam:title"]
