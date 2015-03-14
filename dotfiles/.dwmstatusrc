@@ -79,4 +79,4 @@ def music():
 
 items = (music, volume, cpu, ram, ssid, date)
 indicators = (mail,)
-divider = ' | '
+divider = ' ☙ '
