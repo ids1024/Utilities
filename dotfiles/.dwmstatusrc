@@ -22,7 +22,7 @@ def colorPercent(percent, name):
         color = "orange"
     else:
         color = "red"
-    return (str(percent) + '% ' + name, color)
+    return (str(percent).rjust(3) + '% ' + name, color)
 
 
 def date():
@@ -43,11 +43,11 @@ def volume():
         mixer = alsaaudio.Mixer("Master")
         vol = mixer.getvolume()[0]
         if mixer.getmute()[0]:
-            return str(vol) + "% Muted", "grey"
+            return str(vol).rjust(3) + "% Muted ", "grey"
         else:
-            return str(vol) + "% Volume"
+            return str(vol).rjust(3) + "% Volume"
     except alsaaudio.ALSAAudioError:
-        return "? Volume"
+        return "  ? Volume"
 
 def cpu():
     return colorPercent(psutil.cpu_percent(), 'CPU')
