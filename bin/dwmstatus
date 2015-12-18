@@ -10,6 +10,8 @@ import time
 import argparse
 import shutil
 import logging
+import tempfile
+import threading
 from subprocess import call
 from itertools import zip_longest
 
@@ -95,6 +97,7 @@ logging.basicConfig(
 
 argparser = argparse.ArgumentParser(description='Dwm and Dvtm Status Bar')
 argparser.add_argument('--dvtm', help='Use with dvtm instead of dwm')
+argparser.add_argument('--sway', action='store_true', help='Use with sway instead of dwm')
 argparser.add_argument('--stop', action='store_true', help='Stop server')
 argparser.add_argument('--restart', action='store_true', help='Restart server')
 args = argparser.parse_args()
@@ -111,6 +114,19 @@ else:
         cmd = "exit"
     elif args.dvtm:
         cmd = "dvtm " + args.dvtm
+    elif args.sway:
+        fifopath = tempfile.mktemp(prefix='swaystatusfifo_')
+        os.mkfifo(fifopath)
+        def readfifothread():
+            # Continue despite EOF
+            # TODO: Make server only EOF when exiting
+            while True:
+                with open(fifopath, 'r') as fifofile:
+                    for line in fifofile:
+                        print(line, end='')
+        fifothread = threading.Thread(target=readfifothread)
+        fifothread.start()
+        cmd = "dvtm " + fifopath
     else:
         cmd = "dwm " + os.environ["DISPLAY"]
     with open(ctlpath, 'w') as fifo:
