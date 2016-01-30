@@ -8,6 +8,7 @@ from email.utils import parseaddr
 from email.parser import BytesHeaderParser
 import abook
 import psutil
+from urllib.request import urlopen, URLError
 
 tmpdir = "/tmp/dwmstatus"
 inbox = os.path.expanduser("~/.mail/perebruin/INBOX")
@@ -56,18 +57,23 @@ def ram():
     return colorPercent(psutil.virtual_memory().percent, 'RAM')
 
 def mail():
-    addressbook = abook.get_abook()
-    parser = BytesHeaderParser()
-    os.chdir(inbox + "/new")
-    emails = os.listdir()
-    if not emails:
-        return
-    for i in emails:
-        with open(i, 'rb') as file:
-            addr = parser.parse(file).get('from')
-        if parseaddr(addr)[1] in addressbook:
-            return ('✉', "red")
-    return '✉'
+#    addressbook = abook.get_abook()
+#    parser = BytesHeaderParser()
+#    os.chdir(inbox + "/new")
+#    emails = os.listdir()
+#    if not emails:
+#        return
+#    for i in emails:
+#        with open(i, 'rb') as file:
+#            addr = parser.parse(file).get('from')
+#        if parseaddr(addr)[1] in addressbook:
+#            return ('✉', "red")
+#    return '✉'
+    try:
+        if urlopen('http://iandouglasscott.com:8066').read():
+            return '✉'
+    except URLError:
+        pass
 
 def music():
     cmd = ["playerctl", "metadata", "xesam:title"]
