@@ -83,6 +83,13 @@ def music():
         return
     return output
 
-items = (music, volume, cpu, ram, ssid, date)
+def battery():
+    try:
+        percent = open('/sys/class/power_supply/BAT0/capacity').read().strip()
+    except FileNotFoundError:
+        return " No Battery"
+    return percent.rjust(3) + '% Battery'
+
+items = (music, volume, cpu, ram, battery, ssid, date)
 indicators = (mail,)
 divider = ' ☙ '
