@@ -118,10 +118,10 @@ else:
         fifopath = tempfile.mktemp(prefix='swaystatusfifo_')
         os.mkfifo(fifopath)
         def readfifothread():
-            # Continue despite EOF
-            # TODO: Make server only EOF when exiting
-            while True:
-                with open(fifopath, 'r') as fifofile:
+            with open(fifopath, 'r') as fifofile:
+                # Continue despite EOF
+                # TODO: Make server only EOF when exiting
+                while True:
                     for line in fifofile:
                         print(line, end='')
                         sys.stdout.flush()
