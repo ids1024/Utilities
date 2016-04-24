@@ -124,6 +124,7 @@ else:
                 with open(fifopath, 'r') as fifofile:
                     for line in fifofile:
                         print(line, end='')
+                        sys.stdout.flush()
         fifothread = threading.Thread(target=readfifothread)
         fifothread.start()
         cmd = "dvtm " + fifopath
