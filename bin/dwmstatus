@@ -102,6 +102,21 @@ argparser.add_argument('--stop', action='store_true', help='Stop server')
 argparser.add_argument('--restart', action='store_true', help='Restart server')
 args = argparser.parse_args()
 
+def start_sway():
+    fifopath = tempfile.mktemp(prefix='swaystatusfifo_')
+    os.mkfifo(fifopath)
+    def readfifothread():
+        with open(fifopath, 'r') as fifofile:
+            # Continue despite EOF
+            # TODO: Make server only EOF when exiting
+            while True:
+                for line in fifofile:
+                    print(line, end='')
+                    sys.stdout.flush()
+    fifothread = threading.Thread(target=readfifothread)
+    fifothread.start()
+    return fifopath
+
 try:
     with open(pidfile) as file:
         os.kill(int(file.read()), 0)  # test if process exists
@@ -115,19 +130,7 @@ else:
     elif args.dvtm:
         cmd = "dvtm " + args.dvtm
     elif args.sway:
-        fifopath = tempfile.mktemp(prefix='swaystatusfifo_')
-        os.mkfifo(fifopath)
-        def readfifothread():
-            with open(fifopath, 'r') as fifofile:
-                # Continue despite EOF
-                # TODO: Make server only EOF when exiting
-                while True:
-                    for line in fifofile:
-                        print(line, end='')
-                        sys.stdout.flush()
-        fifothread = threading.Thread(target=readfifothread)
-        fifothread.start()
-        cmd = "dvtm " + fifopath
+        cmd = "dvtm " + start_sway()
     else:
         cmd = "dwm " + os.environ["DISPLAY"]
     with open(ctlpath, 'w') as fifo:
@@ -152,6 +155,8 @@ dwmsessions = set()
 
 if args.dvtm:
     dvtmfifos.add(args.dvtm)
+elif args.sway:
+    dvtmfifos.add(start_sway())
 else:
     dwmsessions.add(os.environ["DISPLAY"])
 
