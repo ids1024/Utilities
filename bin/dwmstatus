@@ -48,8 +48,10 @@ def formatText(functions):
 def setDvtmBar(text):
     for fifopath in dvtmfifos.copy():
         try:
-            with open(fifopath, 'w', opener=opener) as fifo:
-                fifo.write(text + '\n')
+            if fifopath not in fifofiles:
+                fifofiles[fifopath] = open(fifopath, 'w', opener=opener)
+            fifofiles[fifopath].write(text + '\n')
+            fifofiles[fifopath].flush()
         except OSError:  # Not open for reading
             logging.info("Discarding " + fifopath)
             dvtmfifos.discard(fifopath)
@@ -107,12 +109,9 @@ def start_sway():
     os.mkfifo(fifopath)
     def readfifothread():
         with open(fifopath, 'r') as fifofile:
-            # Continue despite EOF
-            # TODO: Make server only EOF when exiting
-            while True:
-                for line in fifofile:
-                    print(line, end='')
-                    sys.stdout.flush()
+            for line in fifofile:
+                print(line, end='')
+                sys.stdout.flush()
     fifothread = threading.Thread(target=readfifothread)
     fifothread.start()
     return fifopath
@@ -152,11 +151,13 @@ os.mkfifo(ctlpath)
 ctlfifo = open(ctlpath, opener=opener)
 dvtmfifos = set()
 dwmsessions = set()
+fifofiles = {}
 
 if args.dvtm:
     dvtmfifos.add(args.dvtm)
 elif args.sway:
     dvtmfifos.add(start_sway())
+    time.sleep(1)
 else:
     dwmsessions.add(os.environ["DISPLAY"])
 
