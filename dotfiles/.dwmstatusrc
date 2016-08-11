@@ -37,7 +37,7 @@ def ssid():
     if 'Not connected.' in output:
         return
     else:
-        return output.split('\n')[1].split()[1]
+        return ' '.join(output.split('\n')[1].split()[1:])
 
 def volume():
     try:
@@ -70,7 +70,7 @@ def mail():
 #            return ('✉', "red")
 #    return '✉'
     try:
-        if urlopen('http://iandouglasscott.com:8066').read():
+        if urlopen('https://iandouglasscott.com/mailtest').read():
             return '✉'
     except URLError:
         pass
