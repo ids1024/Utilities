@@ -72,7 +72,7 @@ def mail():
     try:
         if urlopen('https://iandouglasscott.com/mailtest').read():
             return '✉'
-    except URLError:
+    except (URLError, ConnectionError):
         pass
 
 def music():
