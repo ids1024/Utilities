@@ -1,7 +1,20 @@
 #!/bin/bash
-if [[ "$1" == "-u" ]] #Update, should be done in a cron job
-then
+
+UPDATE_FREQ=30 # Update frequency in minutes
+
+function lsaur_update {
 	curl https://aur.archlinux.org/packages.gz | zcat | awk 'NR>1' | sponge ~/.lsaur
+}
+
+if [[ -e ~/.lsaur ]]
+then
+	file_age=$(( (`date +%s` - `stat -c %Y ~/.lsaur`) / 60 ))
+	if [[ $file_age > $UPDATE_FREQ ]]
+	then
+		lsaur_update
+	fi
 else
-	cat ~/.lsaur
+	lsaur_update
 fi
+
+cat ~/.lsaur
