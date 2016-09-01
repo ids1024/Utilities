@@ -1,4 +1,4 @@
-A collection of various simple scripts, probably all poorly implemented. Some include hardcoded paths.
+A collection of various simple scripts, for my own use, which others may or may not find useful. Some include hardcoded paths.
 
 aurphan: Simplified version of http://kmkeen.com/aurphan/ implemented in python instead of bash.
 dwmstatus.py: My statusbar for dwm and dvtm.
