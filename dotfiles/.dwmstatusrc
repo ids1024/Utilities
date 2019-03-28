@@ -3,7 +3,6 @@
 import os
 import subprocess
 import time
-import alsaaudio
 from email.utils import parseaddr
 from email.parser import BytesHeaderParser
 import abook
@@ -41,9 +40,8 @@ def ssid():
 
 def volume():
     try:
-        mixer = alsaaudio.Mixer("Master")
-        vol = mixer.getvolume()[0]
-        if mixer.getmute()[0]:
+        vol = int(subprocess.check_output(('pamixer','--get-volume')).decode())
+        if subprocess.call(('pamixer','--get-mute'), stdout=subprocess.DEVNULL) == 0:
             return str(vol).rjust(3) + "% Muted ", "grey"
         else:
             return str(vol).rjust(3) + "% Volume"
